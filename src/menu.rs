@@ -1,5 +1,5 @@
 use crate::loading::FontAssets;
-use crate::GameState;
+use crate::{GameState, LevelState};
 use bevy::prelude::*;
 
 pub struct MenuPlugin;
@@ -11,9 +11,12 @@ impl Plugin for MenuPlugin {
         app.init_resource::<ButtonColors>()
             .add_system(setup_menu.in_schedule(OnEnter(GameState::Menu)))
             .add_system(click_play_button.in_set(OnUpdate(GameState::Menu)))
-            .add_system(cleanup_menu.in_schedule(OnExit(GameState::Menu)));
+            .add_system(cleanup_menu.in_schedule(OnExit(GameState::Menu)))
+            .add_event::<LevelStart>();
     }
 }
+
+pub struct LevelStart;
 
 #[derive(Resource)]
 struct ButtonColors {
@@ -63,15 +66,19 @@ fn setup_menu(
 fn click_play_button(
     button_colors: Res<ButtonColors>,
     mut state: ResMut<NextState<GameState>>,
+    mut level_state: ResMut<NextState<LevelState>>,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),
         (Changed<Interaction>, With<Button>),
     >,
+    mut level_start_events: EventWriter<LevelStart>,
 ) {
     for (interaction, mut color) in &mut interaction_query {
         match *interaction {
             Interaction::Clicked => {
                 state.set(GameState::Playing);
+                level_state.set(LevelState::OverWorld);
+                level_start_events.send(LevelStart);
             }
             Interaction::Hovered => {
                 *color = button_colors.hovered.into();

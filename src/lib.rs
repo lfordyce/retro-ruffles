@@ -1,19 +1,28 @@
 mod actions;
+mod animation;
 mod audio;
+mod clock;
+mod levels;
 mod loading;
 mod menu;
 mod player;
+mod ui;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
-use crate::player::PlayerPlugin;
 
+use crate::animation::SpriteSheetAnimationPlugin;
+use crate::clock::ClockPlugin;
+use crate::levels::LevelsPlugin;
+use crate::player::{EyePlugin, GoalPlugin, PlayerPlugin};
+use crate::ui::UiPlugin;
 use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 
 // This example game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -27,6 +36,17 @@ enum GameState {
     Playing,
     // Here the menu is drawn and waiting for player interaction
     Menu,
+    GameOver,
+    WinScreen,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, Copy, Hash, Default, States, Reflect)]
+pub enum LevelState {
+    #[default]
+    None,
+    OverWorld,
+    Console,
+    ConsoleLoading,
 }
 
 pub struct GamePlugin;
@@ -34,11 +54,27 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_state::<GameState>()
+            .add_state::<LevelState>()
+            .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
+            .insert_resource(RapierConfiguration {
+                gravity: Vec2::ZERO,
+                ..Default::default()
+            })
+            .add_plugin(RapierDebugRenderPlugin {
+                enabled: false,
+                ..default()
+            })
             .add_plugin(LoadingPlugin)
             .add_plugin(MenuPlugin)
+            .add_plugin(LevelsPlugin { level_index: 0 })
             .add_plugin(ActionsPlugin)
+            .add_plugin(SpriteSheetAnimationPlugin)
             .add_plugin(InternalAudioPlugin)
-            .add_plugin(PlayerPlugin);
+            .add_plugin(ClockPlugin)
+            .add_plugin(UiPlugin)
+            .add_plugin(PlayerPlugin)
+            .add_plugin(GoalPlugin)
+            .add_plugin(EyePlugin);
 
         #[cfg(debug_assertions)]
         {

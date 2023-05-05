@@ -1,6 +1,7 @@
 use crate::GameState;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
+use bevy_ecs_ldtk::LdtkAsset;
 use bevy_kira_audio::AudioSource;
 
 pub struct LoadingPlugin;
@@ -15,7 +16,8 @@ impl Plugin for LoadingPlugin {
         )
         .add_collection_to_loading_state::<_, FontAssets>(GameState::Loading)
         .add_collection_to_loading_state::<_, AudioAssets>(GameState::Loading)
-        .add_collection_to_loading_state::<_, TextureAssets>(GameState::Loading);
+        .add_collection_to_loading_state::<_, TextureAssets>(GameState::Loading)
+        .add_collection_to_loading_state::<_, LevelAssets>(GameState::Loading);
     }
 }
 
@@ -38,4 +40,52 @@ pub struct AudioAssets {
 pub struct TextureAssets {
     #[asset(path = "textures/bevy.png")]
     pub texture_bevy: Handle<Image>,
+
+    #[asset(path = "icons/heart.png")]
+    pub heart: Handle<Image>,
+
+    #[asset(path = "icons/empty_heart_container.png")]
+    pub empty_heart: Handle<Image>,
+
+    #[asset(path = "icons/potion.png")]
+    pub potion: Handle<Image>,
+
+    #[asset(path = "icons/coin.png")]
+    pub coin: Handle<Image>,
+
+    #[asset(path = "text/tile-0.png")]
+    pub text0: Handle<Image>,
+
+    #[asset(path = "text/tile-1.png")]
+    pub text1: Handle<Image>,
+
+    #[asset(path = "text/tile-2.png")]
+    pub text2: Handle<Image>,
+
+    #[asset(path = "text/tile-3.png")]
+    pub text3: Handle<Image>,
+
+    #[asset(path = "text/tile-4.png")]
+    pub text4: Handle<Image>,
+
+    #[asset(path = "text/tile-5.png")]
+    pub text5: Handle<Image>,
+
+    #[asset(path = "text/tile-6.png")]
+    pub text6: Handle<Image>,
+
+    #[asset(path = "text/tile-7.png")]
+    pub text7: Handle<Image>,
+
+    #[asset(path = "text/tile-8.png")]
+    pub text8: Handle<Image>,
+
+    #[asset(path = "text/tile-9.png")]
+    pub text9: Handle<Image>,
+}
+
+#[derive(AssetCollection, Resource)]
+pub struct LevelAssets {
+    #[asset(path = "textures/level.ldtk")]
+    pub level: Handle<LdtkAsset>,
 }
