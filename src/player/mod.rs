@@ -1,13 +1,14 @@
+pub mod alt;
 mod entities;
+
 use crate::actions::Actions;
+use crate::animation::{FromComponentPlugin, SpriteSheetAnimation};
 use crate::loading::TextureAssets;
 use crate::GameState;
-pub use entities::{EyePlugin, GoalPlugin};
+pub use entities::{AltGoalPlugin, EyePlugin, GoalPlugin};
 
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
-
-use crate::animation::{FromComponentPlugin, SpriteSheetAnimation};
 use bevy_rapier2d::prelude::*;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
@@ -64,6 +65,7 @@ pub struct ColliderBundle {
     pub rotation_constraints: LockedAxes,
     pub friction: Friction,
     pub density: ColliderMassProperties,
+    pub active_events: ActiveEvents,
 }
 
 pub struct PlayerPlugin;
@@ -104,6 +106,31 @@ impl From<&EntityInstance> for ColliderBundle {
                     coefficient: 0.1,
                     combine_rule: CoefficientCombineRule::Min,
                 },
+                rotation_constraints,
+                ..Default::default()
+            },
+            "Goal" => ColliderBundle {
+                collider: Collider::cuboid(8., 8.),
+                rigid_body: RigidBody::Fixed,
+                active_events: ActiveEvents::COLLISION_EVENTS,
+                rotation_constraints,
+                ..Default::default()
+            },
+            // Alternate map
+            "Crab" => ColliderBundle {
+                collider: Collider::ball(8.),
+                rigid_body: RigidBody::Dynamic,
+                friction: Friction {
+                    coefficient: 0.1,
+                    combine_rule: CoefficientCombineRule::Min,
+                },
+                rotation_constraints,
+                ..Default::default()
+            },
+            "Goal_Alt" => ColliderBundle {
+                collider: Collider::cuboid(8., 8.),
+                rigid_body: RigidBody::Fixed,
+                active_events: ActiveEvents::COLLISION_EVENTS,
                 rotation_constraints,
                 ..Default::default()
             },

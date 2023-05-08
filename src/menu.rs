@@ -55,7 +55,7 @@ fn setup_menu(
             parent.spawn(TextBundle::from_section(
                 "Play",
                 TextStyle {
-                    font: font_assets.fira_sans.clone(),
+                    font: font_assets.monogram.clone(),
                     font_size: 40.0,
                     color: Color::rgb(0.9, 0.9, 0.9),
                 },

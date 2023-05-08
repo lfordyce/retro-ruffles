@@ -4,6 +4,7 @@ use bevy_ecs_ldtk::prelude::*;
 use std::collections::{HashMap, HashSet};
 
 use crate::levels::components::Wall;
+use crate::player::alt::PlayerAlt;
 use crate::player::Player;
 use bevy_rapier2d::prelude::*;
 
@@ -16,12 +17,12 @@ pub fn camera_fit_inside_current_level(
             &mut bevy::render::camera::OrthographicProjection,
             &mut Transform,
         ),
-        Without<Player>,
+        Without<PlayerAlt>,
     >,
-    player_query: Query<&Transform, With<Player>>,
+    player_query: Query<&Transform, With<PlayerAlt>>,
     level_query: Query<
         (&Transform, &Handle<LdtkLevel>),
-        (Without<OrthographicProjection>, Without<Player>),
+        (Without<OrthographicProjection>, Without<PlayerAlt>),
     >,
     level_selection: Res<LevelSelection>,
     ldtk_levels: Res<Assets<LdtkLevel>>,

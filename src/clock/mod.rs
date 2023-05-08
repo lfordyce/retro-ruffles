@@ -48,6 +48,7 @@ pub fn update_time(
     mut level_events: EventReader<LevelStart>,
     mut time_events: EventWriter<TimeEvent>,
     mut vitals: Query<&mut Vitality>,
+    mut level_state: ResMut<NextState<GameState>>,
 ) {
     for _ in level_events.iter() {
         time_scale.0 = 1.;
@@ -69,6 +70,7 @@ pub fn update_time(
         time_scale.0 = 0.;
         for mut vitality in vitals.iter_mut() {
             *vitality = Vitality::Dead;
+            level_state.set(GameState::GameOver)
         }
     }
 }

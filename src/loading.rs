@@ -28,6 +28,12 @@ impl Plugin for LoadingPlugin {
 pub struct FontAssets {
     #[asset(path = "fonts/FiraSans-Bold.ttf")]
     pub fira_sans: Handle<Font>,
+
+    #[asset(path = "fonts/VT323-Regular.ttf")]
+    pub crt_font: Handle<Font>,
+
+    #[asset(path = "fonts/monogram.ttf")]
+    pub monogram: Handle<Font>,
 }
 
 #[derive(AssetCollection, Resource)]
@@ -38,8 +44,11 @@ pub struct AudioAssets {
 
 #[derive(AssetCollection, Resource)]
 pub struct TextureAssets {
-    #[asset(path = "textures/bevy.png")]
-    pub texture_bevy: Handle<Image>,
+    #[asset(path = "textures/full_clock.png")]
+    pub clock: Handle<Image>,
+
+    #[asset(path = "textures/crt.png")]
+    pub crt_overlay: Handle<Image>,
 
     #[asset(path = "icons/heart.png")]
     pub heart: Handle<Image>,
@@ -86,6 +95,7 @@ pub struct TextureAssets {
 
 #[derive(AssetCollection, Resource)]
 pub struct LevelAssets {
-    #[asset(path = "textures/level.ldtk")]
+    // #[asset(path = "textures/level.ldtk")]
+    #[asset(path = "level/level.ldtk")]
     pub level: Handle<LdtkAsset>,
 }
