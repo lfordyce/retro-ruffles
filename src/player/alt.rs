@@ -51,15 +51,9 @@ impl Plugin for PlayerAltPlugin {
 }
 
 fn apply_alt_actions(
-    time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
     mut player_query: Query<(&mut Velocity, &mut TextureAtlasSprite), With<PlayerAlt>>,
 ) {
-    // if actions.player_movement.is_none() {
-    //     return;
-    // }
-    //
-
     let mut direction = Vec2::default();
     if keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up) {
         direction.y = 1.;

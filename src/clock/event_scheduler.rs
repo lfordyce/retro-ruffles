@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use std::{collections::VecDeque, marker::PhantomData, time::Duration};
+use std::{collections::VecDeque, marker::PhantomData};
 
 pub struct EventSchedulerPlugin<E> {
     data: PhantomData<E>,
@@ -45,15 +45,15 @@ where
     }
 }
 
-impl<E> EventScheduler<E>
-where
-    E: 'static + Send + Sync,
-{
-    pub fn schedule(&mut self, event: E, duration: Duration) {
-        self.events
-            .push_back((event, Timer::new(duration, TimerMode::Once)));
-    }
-}
+// impl<E> EventScheduler<E>
+// where
+//     E: 'static + Send + Sync,
+// {
+//     pub fn schedule(&mut self, event: E, duration: Duration) {
+//         self.events
+//             .push_back((event, Timer::new(duration, TimerMode::Once)));
+//     }
+// }
 
 pub fn fire_scheduled_events<E>(
     time: Res<Time>,

@@ -1,17 +1,17 @@
 use crate::loading::FontAssets;
 use crate::menu::LevelStart;
-use crate::player::Vitality;
+use crate::ui::Score;
 use crate::{GameState, LevelState};
 use bevy::prelude::{BuildChildren, JustifyContent, Val};
 use bevy::text::Text;
 use bevy::ui::{AlignContent, AlignItems, BackgroundColor};
 use bevy::{
     prelude::{
-        default, Changed, Color, Commands, Component, DespawnRecursiveExt, Entity, EventWriter,
-        Input, KeyCode, NextState, NodeBundle, Query, Res, ResMut, TextBundle, With,
+        default, Color, Commands, Component, DespawnRecursiveExt, Entity, EventWriter, Input,
+        KeyCode, NextState, NodeBundle, Query, Res, ResMut, TextBundle, With,
     },
-    text::{TextAlignment, TextSection, TextStyle},
-    ui::{AlignSelf, PositionType, Size, Style, UiRect},
+    text::{TextAlignment, TextStyle},
+    ui::{PositionType, Size, Style},
 };
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default, Hash, Component)]
@@ -56,6 +56,10 @@ pub fn game_over_screen(
                 ..default()
             });
         });
+}
+
+pub fn reset_score(mut score: ResMut<Score>) {
+    *score = Score::default();
 }
 
 pub fn game_over_start_new_game(

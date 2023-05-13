@@ -4,13 +4,9 @@ mod systems;
 use crate::levels::components::WallBundle;
 use crate::levels::systems::{camera_fit_inside_current_level, spawn_wall_collision};
 use crate::loading::LevelAssets;
-use crate::trigger::bundles::LevelTriggerBundle;
 use crate::GameState;
 use bevy::prelude::*;
-use bevy_ecs_ldtk::{
-    prelude::{FieldValue, LdtkEntityAppExt, LdtkIntCellAppExt},
-    *,
-};
+use bevy_ecs_ldtk::{prelude::LdtkIntCellAppExt, *};
 use bevy_rapier2d::plugin::PhysicsSet;
 
 pub struct LevelsPlugin {

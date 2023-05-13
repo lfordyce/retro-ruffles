@@ -1,6 +1,6 @@
 use crate::player::Vitality;
 use crate::GameState;
-use bevy::prelude::{Changed, NextState, Query, ResMut, Transform, With, Without};
+use bevy::prelude::{Changed, NextState, Query, ResMut, With};
 
 use super::components::{Trigger, TriggerTargetLevel};
 

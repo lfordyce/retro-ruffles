@@ -3,7 +3,6 @@ mod entities;
 
 use crate::actions::Actions;
 use crate::animation::{FromComponentPlugin, SpriteSheetAnimation};
-use crate::loading::TextureAssets;
 use crate::GameState;
 pub use entities::{AltGoalPlugin, EyePlugin, GoalPlugin};
 
@@ -153,8 +152,6 @@ impl Plugin for PlayerPlugin {
 }
 
 fn apply_actions(
-    time: Res<Time>,
-    actions: Res<Actions>,
     keyboard_input: Res<Input<KeyCode>>,
     mut player_query: Query<
         (
@@ -164,8 +161,6 @@ fn apply_actions(
         ),
         With<Player>,
     >,
-    mut x_velocity_contribution: Local<f32>,
-    mut y_velocity_contribution: Local<f32>,
 ) {
     // if actions.player_movement.is_none() {
     //     return;
@@ -238,29 +233,29 @@ fn apply_actions(
 //         }
 //     }
 // }
-
-fn move_player(
-    time: Res<Time>,
-    actions: Res<Actions>,
-    mut player_query: Query<
-        (
-            &mut Transform,
-            &mut PlayerAnimationState,
-            &mut TextureAtlasSprite,
-        ),
-        With<Player>,
-    >,
-) {
-    if actions.player_movement.is_none() {
-        return;
-    }
-    let speed = 150.;
-    let movement = Vec3::new(
-        actions.player_movement.unwrap().x * speed * time.delta_seconds(),
-        actions.player_movement.unwrap().y * speed * time.delta_seconds(),
-        0.,
-    );
-    for (mut player_transform, mut animation_state, mut sprite) in &mut player_query {
-        player_transform.translation += movement;
-    }
-}
+//
+// fn move_player(
+//     time: Res<Time>,
+//     actions: Res<Actions>,
+//     mut player_query: Query<
+//         (
+//             &mut Transform,
+//             &mut PlayerAnimationState,
+//             &mut TextureAtlasSprite,
+//         ),
+//         With<Player>,
+//     >,
+// ) {
+//     if actions.player_movement.is_none() {
+//         return;
+//     }
+//     let speed = 150.;
+//     let movement = Vec3::new(
+//         actions.player_movement.unwrap().x * speed * time.delta_seconds(),
+//         actions.player_movement.unwrap().y * speed * time.delta_seconds(),
+//         0.,
+//     );
+//     for (mut player_transform, mut _animation_state, mut _sprite) in &mut player_query {
+//         player_transform.translation += movement;
+//     }
+// }

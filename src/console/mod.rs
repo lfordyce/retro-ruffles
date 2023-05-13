@@ -11,18 +11,12 @@ use bevy::prelude::{
 
 #[derive(Resource)]
 pub struct ConsoleData {
-    input: String,
-    history_index: usize,
-    history: Vec<String>,
     lines: Vec<String>,
 }
 
 impl Default for ConsoleData {
     fn default() -> Self {
         ConsoleData {
-            input: String::from(""),
-            history_index: 0,
-            history: Vec::new(),
             lines: utils::welcome_lines(),
         }
     }
@@ -37,11 +31,14 @@ impl Plugin for ConsolePlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.init_resource::<ConsoleData>()
             .add_event::<event::PrintToConsoleEvent>()
-            .add_system(systems::console_setup.in_schedule(OnEnter(LevelState::Console)))
+            .add_system(systems::setup.in_schedule(OnEnter(LevelState::Console)))
             .add_systems(
                 (
-                    systems::update_lines_area,
-                    event::add_message_events_to_console,
+                    // systems::update_lines_area,
+                    // event::add_message_events_to_console,
+                    systems::button_interaction_system,
+                    systems::button_mouse_select,
+                    systems::button_keyboard_select,
                     systems::close_console_handler,
                 )
                     .in_set(OnUpdate(LevelState::Console))

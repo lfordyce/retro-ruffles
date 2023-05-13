@@ -34,6 +34,12 @@ pub struct FontAssets {
 
     #[asset(path = "fonts/monogram.ttf")]
     pub monogram: Handle<Font>,
+
+    #[asset(path = "fonts/PICO-8 mono.ttf")]
+    pub pico: Handle<Font>,
+
+    #[asset(path = "fonts/prstartk.ttf")]
+    pub pixel_font: Handle<Font>,
 }
 
 #[derive(AssetCollection, Resource)]
@@ -44,11 +50,20 @@ pub struct AudioAssets {
 
 #[derive(AssetCollection, Resource)]
 pub struct TextureAssets {
-    #[asset(path = "textures/full_clock.png")]
-    pub clock: Handle<Image>,
+    #[asset(path = "textures/menu_background.png")]
+    pub menu_background: Handle<Image>,
+
+    #[asset(path = "textures/button.png")]
+    pub button: Handle<Image>,
 
     #[asset(path = "textures/crt.png")]
     pub crt_overlay: Handle<Image>,
+
+    #[asset(path = "icons/full_clock_alt.png")]
+    pub clock: Handle<Image>,
+
+    #[asset(path = "icons/half_heart.png")]
+    pub half_heart: Handle<Image>,
 
     #[asset(path = "icons/heart.png")]
     pub heart: Handle<Image>,

@@ -21,8 +21,7 @@ use crate::clock::ClockPlugin;
 use crate::console::ConsolePlugin;
 use crate::game_over::GameOverPlugin;
 use crate::levels::LevelsPlugin;
-use crate::player::alt::PlayerAltPlugin;
-use crate::player::{AltGoalPlugin, EyePlugin, GoalPlugin, PlayerPlugin};
+use crate::player::{alt::PlayerAltPlugin, AltGoalPlugin};
 use crate::ui::UiPlugin;
 use bevy::app::App;
 #[cfg(debug_assertions)]

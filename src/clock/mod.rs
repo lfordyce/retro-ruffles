@@ -5,7 +5,6 @@ use crate::menu::LevelStart;
 use crate::player::Vitality;
 use crate::GameState;
 use bevy::prelude::*;
-use std::time::Duration;
 
 pub struct ClockPlugin;
 
@@ -36,8 +35,6 @@ pub struct TimeSinceLevelStart(pub f32);
 pub struct TimeScale(pub f32);
 
 pub enum TimeEvent {
-    Rewind,
-    FastForward,
     Normal,
 }
 

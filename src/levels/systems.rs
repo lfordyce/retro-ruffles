@@ -5,7 +5,6 @@ use std::collections::{HashMap, HashSet};
 
 use crate::levels::components::Wall;
 use crate::player::alt::PlayerAlt;
-use crate::player::Player;
 use bevy_rapier2d::prelude::*;
 
 const ASPECT_RATIO: f32 = 16. / 9.;

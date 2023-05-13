@@ -1,5 +1,5 @@
-use crate::{GameState, LevelState};
-use bevy::{prelude::Bundle, utils::default};
+use crate::GameState;
+use bevy::prelude::Bundle;
 
 use super::components::{Trigger, TriggerTargetLevel};
 

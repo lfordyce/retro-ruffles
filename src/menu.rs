@@ -42,7 +42,7 @@ fn setup_menu(
     commands
         .spawn(ButtonBundle {
             style: Style {
-                size: Size::new(Val::Px(120.0), Val::Px(50.0)),
+                size: Size::new(Val::Px(160.0), Val::Px(70.0)),
                 margin: UiRect::all(Val::Auto),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
@@ -53,9 +53,9 @@ fn setup_menu(
         })
         .with_children(|parent| {
             parent.spawn(TextBundle::from_section(
-                "Play",
+                "PLAY",
                 TextStyle {
-                    font: font_assets.monogram.clone(),
+                    font: font_assets.pico.clone(),
                     font_size: 40.0,
                     color: Color::rgb(0.9, 0.9, 0.9),
                 },

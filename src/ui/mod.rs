@@ -1,6 +1,5 @@
 use crate::clock::TimeSinceLevelStart;
 use crate::loading::{FontAssets, TextureAssets};
-use crate::player::Vitality;
 use crate::GameState;
 use bevy::prelude::*;
 
@@ -11,6 +10,12 @@ const MAX_UI_DIGITS: usize = 4;
 
 #[derive(Component, Default, Clone, Debug)]
 pub struct GameUi;
+
+#[derive(Component, Default, Clone, Debug)]
+pub struct GameUiClock;
+
+#[derive(Component, Default, Clone, Debug)]
+pub struct GameUiScore;
 
 #[derive(Component, Default, Clone, Debug)]
 pub struct UiElementIndex(usize);
@@ -24,6 +29,12 @@ pub struct BorkPointNumber;
 #[derive(Component, Default, Clone, Debug)]
 pub struct CoinNumber;
 
+#[derive(Resource, Default)]
+pub struct Score(pub(crate) f32);
+
+#[derive(Component)]
+struct ScoreText;
+
 pub const WINDOW_SCALE: f32 = 4.;
 pub const PLAYER_MAX_HEALTH: u32 = 3;
 
@@ -31,19 +42,16 @@ pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            (spawn_ui, spawn_counter, spawn_clock).in_schedule(OnEnter(GameState::Playing)),
-        )
-        .add_systems(
-            (
-                update_counter,
-                update_health_containers,
-                update_potion_counter,
-                // death_screen,
+        app.add_systems((spawn_clock, spawn_score).in_schedule(OnEnter(GameState::Playing)))
+            .add_systems(
+                (
+                    update_counter,
+                    update_score_text,
+                    // death_screen,
+                )
+                    .in_set(OnUpdate(GameState::Playing)),
             )
-                .in_set(OnUpdate(GameState::Playing)),
-        )
-        .add_system(cleanup.in_schedule(OnExit(GameState::Playing)));
+            .add_system(cleanup.in_schedule(OnExit(GameState::Playing)));
     }
 }
 
@@ -70,14 +78,15 @@ fn spawn_clock(mut commands: Commands, font_assets: Res<FontAssets>, assets: Res
             }),
             ..Default::default()
         })
+        .insert(GameUiClock::default())
         .with_children(|parent| {
             parent
                 .spawn(TextBundle {
                     text: Text::from_section(
                         "00:00",
                         TextStyle {
-                            font: font_assets.monogram.clone(),
-                            font_size: 64.0,
+                            font: font_assets.pico.clone(),
+                            font_size: 32.0,
                             color: Color::WHITE,
                         },
                     ),
@@ -97,29 +106,58 @@ fn spawn_clock(mut commands: Commands, font_assets: Res<FontAssets>, assets: Res
         });
 }
 
-fn spawn_counter(mut commands: Commands, font_assets: Res<FontAssets>) {
+fn spawn_score(mut commands: Commands, font_assets: Res<FontAssets>, assets: Res<TextureAssets>) {
+    commands.init_resource::<Score>();
     commands
-        .spawn(TextBundle {
+        .spawn(NodeBundle {
             style: Style {
+                size: Size::new(Val::Px(250.0), Val::Px(75.0)),
                 position_type: PositionType::Absolute,
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
                 position: UiRect {
-                    top: Val::Percent(2.),
-                    left: Val::Percent(50.),
-                    ..default()
+                    left: Val::Px(10.),
+                    top: Val::Px(10.),
+                    ..Default::default()
                 },
-                ..default()
+                ..Default::default()
             },
-            text: Text::from_section(
-                "Counter",
-                TextStyle {
-                    font: font_assets.fira_sans.clone(),
-                    font_size: 64.,
-                    color: Color::BLACK,
-                },
-            ),
-            ..default()
+            background_color: BackgroundColor(Color::Rgba {
+                red: 0.098,
+                green: 0.078,
+                blue: 0.169,
+                alpha: 1.,
+            }),
+            ..Default::default()
         })
-        .insert(Counter);
+        .insert(GameUiScore::default())
+        .with_children(|parent| {
+            // Heart icon score
+            parent.spawn(ImageBundle {
+                style: Style {
+                    size: Size::new(Val::Px(8. * 5.), Val::Px(8. * 5.)),
+                    ..Default::default()
+                },
+                image: assets.half_heart.clone().into(),
+                ..Default::default()
+            });
+            parent
+                .spawn(TextBundle {
+                    text: Text {
+                        sections: vec![TextSection {
+                            value: "0/5".to_string(),
+                            style: TextStyle {
+                                font: font_assets.pico.clone(),
+                                font_size: 32.0,
+                                color: Color::WHITE,
+                            },
+                        }],
+                        ..default()
+                    },
+                    ..Default::default()
+                })
+                .insert(ScoreText);
+        });
 }
 
 fn spawn_ui(mut commands: Commands, assets: Res<TextureAssets>) {
@@ -220,17 +258,15 @@ fn spawn_ui(mut commands: Commands, assets: Res<TextureAssets>) {
                             .insert(UiElementIndex(MAX_UI_DIGITS + 1 - index))
                             .insert(CoinNumber::default());
                     }
-                    // Clock Counter (114)
-                    parent.spawn(ImageBundle {
-                        style: Style {
-                            size: Size::new(Val::Px(8. * WINDOW_SCALE), Val::Px(8. * WINDOW_SCALE)),
-                            ..Default::default()
-                        },
-                        image: assets.clock.clone().into(),
-                        ..Default::default()
-                    });
                 });
         });
+}
+
+fn update_score_text(score: Res<Score>, mut score_text: Query<&mut Text, With<ScoreText>>) {
+    if !score.is_changed() {
+        return;
+    }
+    score_text.single_mut().sections[0].value = format!("{:.0}/5", score.0);
 }
 
 fn update_counter(
@@ -255,17 +291,13 @@ fn update_counter(
         *text = Text::from_section(
             format!("{:0>2}:{:0>2}", minutes, seconds),
             TextStyle {
-                font: asset_holder.monogram.clone(),
-                font_size: 64.,
+                font: asset_holder.pico.clone(),
+                font_size: 32.,
                 color,
             },
         );
     }
 }
-
-fn update_health_containers() {}
-
-fn update_potion_counter() {}
 
 fn number_to_image(image_assets: TextureAssets, num: Option<&u32>) -> Handle<Image> {
     let default: u32 = 0;
@@ -285,58 +317,15 @@ fn number_to_image(image_assets: TextureAssets, num: Option<&u32>) -> Handle<Ima
     }
 }
 
-fn cleanup(mut commands: Commands, query: Query<Entity, With<GameUi>>) {
-    for entity in query.iter() {
+fn cleanup(
+    mut commands: Commands,
+    clock_ui_entity: Query<Entity, With<GameUiClock>>,
+    score_ui_entity: Query<Entity, With<GameUiScore>>,
+) {
+    for entity in clock_ui_entity.iter() {
         commands.entity(entity).despawn_recursive();
     }
-}
-
-#[derive(Copy, Clone, Eq, PartialEq, Debug, Default, Hash, Component)]
-struct DeathScreen;
-
-fn death_screen(
-    mut commands: Commands,
-    vitals: Query<&Vitality, Changed<Vitality>>,
-    existing_death_screens: Query<Entity, With<DeathScreen>>,
-    asset_holder: Res<FontAssets>,
-) {
-    for changed_vitality in vitals.iter() {
-        for entity in existing_death_screens.iter() {
-            commands.entity(entity).despawn_recursive();
-        }
-
-        if *changed_vitality == Vitality::Dead {
-            commands
-                .spawn(NodeBundle {
-                    style: Style {
-                        size: Size {
-                            width: Val::Percent(100.),
-                            height: Val::Percent(100.),
-                        },
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        align_content: AlignContent::Center,
-                        position_type: PositionType::Absolute,
-                        ..default()
-                    },
-                    background_color: BackgroundColor(Color::rgba(0., 0., 0., 1.)),
-                    ..default()
-                })
-                .insert(DeathScreen)
-                .with_children(|builder| {
-                    builder.spawn(TextBundle {
-                        text: Text::from_section(
-                            "GAME OVER\n\n[Press Space to Restart]",
-                            TextStyle {
-                                font: asset_holder.crt_font.clone(),
-                                font_size: 128.,
-                                color: Color::RED,
-                            },
-                        )
-                        .with_alignment(TextAlignment::Center),
-                        ..default()
-                    });
-                });
-        }
+    for entity in score_ui_entity.iter() {
+        commands.entity(entity).despawn_recursive();
     }
 }

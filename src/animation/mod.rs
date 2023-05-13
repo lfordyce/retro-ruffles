@@ -83,16 +83,16 @@ where
     from_type: PhantomData<F>,
 }
 
-impl<F> FromComponentAnimator<F>
-where
-    F: Into<SpriteSheetAnimation> + Component + 'static + Send + Sync + Clone + Iterator<Item = F>,
-{
-    pub fn new() -> Self {
-        FromComponentAnimator {
-            from_type: PhantomData,
-        }
-    }
-}
+// impl<F> FromComponentAnimator<F>
+// where
+//     F: Into<SpriteSheetAnimation> + Component + 'static + Send + Sync + Clone + Iterator<Item = F>,
+// {
+//     pub fn new() -> Self {
+//         FromComponentAnimator {
+//             from_type: PhantomData,
+//         }
+//     }
+// }
 
 impl<F> Plugin for FromComponentAnimator<F>
 where
