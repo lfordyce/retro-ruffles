@@ -191,16 +191,16 @@ pub struct PotionMixSlot {
     pub index: usize,
 }
 
-#[derive(Reflect, Component, Default, PartialEq, Eq, Clone, Copy)]
+#[derive(Reflect, Component, Default, PartialEq, Eq, Clone)]
 #[reflect(Component)]
 pub struct BtnGridPos {
-    pub row: u8,
-    pub col: u8,
+    pub row: usize,
+    pub choice: String,
 }
 
 impl BtnGridPos {
-    pub fn new(row: u8, col: u8) -> Self {
-        Self { row, col }
+    pub fn new(row: usize, choice: String) -> Self {
+        Self { row, choice }
     }
 }
 
@@ -350,8 +350,7 @@ pub fn setup(
                                                     image: texture_assets.button.clone().into(),
                                                     ..Default::default()
                                                 },
-                                                Answers::variant_from_index(pos),
-                                                BtnGridPos::new(pos as u8, 0),
+                                                BtnGridPos::new(pos, choice.clone()),
                                                 Name::new("Choice Slot"),
                                             ))
                                             .with_children(|parent| {
@@ -365,72 +364,6 @@ pub fn setup(
                                                 ));
                                             });
                                     }
-
-                                    // parent
-                                    //     .spawn(ButtonBundle {
-                                    //         style: button_style.clone(),
-                                    //         background_color: BackgroundColor(
-                                    //             Color::rgb(0.15, 0.15, 0.15).into(),
-                                    //         ),
-                                    //         image: texture_assets.button.clone().into(),
-                                    //         ..Default::default()
-                                    //     })
-                                    //     .insert(Answers::One)
-                                    //     .insert(BtnGridPos::new(0, 0))
-                                    //     .with_children(|parent| {
-                                    //         parent.spawn(TextBundle::from_section(
-                                    //             "ANSWER 1",
-                                    //             TextStyle {
-                                    //                 font: font_assets.pixel_font.clone(),
-                                    //                 font_size: 20.0,
-                                    //                 color: Color::WHITE,
-                                    //             },
-                                    //         ));
-                                    //     });
-                                    //
-                                    // parent
-                                    //     .spawn(ButtonBundle {
-                                    //         style: button_style.clone(),
-                                    //         background_color: BackgroundColor(
-                                    //             Color::rgb(0.15, 0.15, 0.15).into(),
-                                    //         ),
-                                    //         image: texture_assets.button.clone().into(),
-                                    //         ..Default::default()
-                                    //     })
-                                    //     .insert(Answers::Two)
-                                    //     .insert(BtnGridPos::new(1, 0))
-                                    //     .with_children(|parent| {
-                                    //         parent.spawn(TextBundle::from_section(
-                                    //             "ANSWER 2",
-                                    //             TextStyle {
-                                    //                 font: font_assets.pixel_font.clone(),
-                                    //                 font_size: 17.0,
-                                    //                 color: Color::WHITE,
-                                    //             },
-                                    //         ));
-                                    //     });
-                                    //
-                                    // parent
-                                    //     .spawn(ButtonBundle {
-                                    //         style: button_style.clone(),
-                                    //         background_color: BackgroundColor(
-                                    //             Color::rgb(0.15, 0.15, 0.15).into(),
-                                    //         ),
-                                    //         image: texture_assets.button.clone().into(),
-                                    //         ..Default::default()
-                                    //     })
-                                    //     .insert(Answers::Three)
-                                    //     .insert(BtnGridPos::new(2, 0))
-                                    //     .with_children(|parent| {
-                                    //         parent.spawn(TextBundle::from_section(
-                                    //             "ANSWER 3",
-                                    //             TextStyle {
-                                    //                 font: font_assets.pixel_font.clone(),
-                                    //                 font_size: 17.0,
-                                    //                 color: Color::WHITE,
-                                    //             },
-                                    //         ));
-                                    //     });
                                 });
                         });
                     // Header wrapper
@@ -463,29 +396,29 @@ pub fn setup(
                         });
 
                     // Combination text wrapper
-                    parent
-                        .spawn(NodeBundle {
-                            style: Style {
-                                size: Size::new(Val::Percent(100.0), Val::Auto),
-                                justify_content: JustifyContent::SpaceAround,
-                                align_items: AlignItems::Center,
-                                ..Default::default()
-                            },
-                            background_color: BackgroundColor(Color::NONE.into()),
-                            ..Default::default()
-                        })
-                        .with_children(|parent| {
-                            parent
-                                .spawn(TextBundle::from_section(
-                                    "Some sort of description",
-                                    TextStyle {
-                                        font: font_assets.pixel_font.clone(),
-                                        font_size: 20.0,
-                                        color: Color::WHITE,
-                                    },
-                                ))
-                                .insert(CombinationText);
-                        });
+                    // parent
+                    //     .spawn(NodeBundle {
+                    //         style: Style {
+                    //             size: Size::new(Val::Percent(100.0), Val::Auto),
+                    //             justify_content: JustifyContent::SpaceAround,
+                    //             align_items: AlignItems::Center,
+                    //             ..Default::default()
+                    //         },
+                    //         background_color: BackgroundColor(Color::NONE.into()),
+                    //         ..Default::default()
+                    //     })
+                    //     .with_children(|parent| {
+                    //         parent
+                    //             .spawn(TextBundle::from_section(
+                    //                 "Some sort of description",
+                    //                 TextStyle {
+                    //                     font: font_assets.pixel_font.clone(),
+                    //                     font_size: 20.0,
+                    //                     color: Color::WHITE,
+                    //                 },
+                    //             ))
+                    //             .insert(CombinationText);
+                    //     });
                     // Buttons help text wrapper
                     parent
                         .spawn(NodeBundle {
@@ -520,19 +453,16 @@ pub fn setup(
 }
 
 pub fn button_interaction_system(
-    element_button_query: Query<
-        (&Interaction, &Answers, &BtnGridPos),
-        (With<Button>, Changed<Interaction>),
-    >,
+    element_button_query: Query<(&Interaction, &BtnGridPos), (With<Button>, Changed<Interaction>)>,
     mut state: ResMut<AbilityMenuState>,
 ) {
-    for (interaction, element, grid_pos) in &element_button_query {
+    for (interaction, grid_pos) in &element_button_query {
         match *interaction {
             Interaction::Clicked => {
-                info!("clicked: {}", *element)
+                info!("clicked: {}", grid_pos.choice)
             }
             Interaction::Hovered => {
-                state.selected_pos = *grid_pos;
+                state.selected_pos = grid_pos.clone();
             }
             _ => {}
         }
@@ -540,11 +470,11 @@ pub fn button_interaction_system(
 }
 
 pub fn button_mouse_select(
-    mut element_button_query: Query<(&Answers, &BtnGridPos, &mut BackgroundColor), With<Button>>,
+    mut element_button_query: Query<(&BtnGridPos, &mut BackgroundColor), With<Button>>,
     state: ResMut<AbilityMenuState>,
 ) {
-    for (_element, grid_pos, mut color) in &mut element_button_query {
-        if state.selected_pos == *grid_pos {
+    for (grid_pos, mut color) in &mut element_button_query {
+        if state.selected_pos.row == grid_pos.row {
             // info!("button selected {}", grid_pos.row);
             // *color = BackgroundColor(Color::rgb(0.25, 0.55, 0.25).into());
             *color = BackgroundColor(Color::BLUE)
@@ -556,7 +486,7 @@ pub fn button_mouse_select(
 }
 
 pub fn button_keyboard_select(
-    element_button_query: Query<(&Answers, &BtnGridPos)>,
+    element_button_query: Query<&BtnGridPos>,
     mut state: ResMut<AbilityMenuState>,
     keyboard_input: Res<Input<KeyCode>>,
 ) {
@@ -574,9 +504,9 @@ pub fn button_keyboard_select(
         }
     }
     if keyboard_input.just_pressed(KeyCode::Z) {
-        for (element, grid_pos) in element_button_query.iter() {
-            if *grid_pos == state.selected_pos {
-                info!("key code select: {}", *element);
+        for grid_pos in element_button_query.iter() {
+            if grid_pos.row == state.selected_pos.row {
+                info!("key code select: {}", grid_pos.choice);
                 return;
             }
         }
