@@ -1,7 +1,6 @@
 pub mod alt;
 mod entities;
 
-use crate::actions::Actions;
 use crate::animation::{FromComponentPlugin, SpriteSheetAnimation};
 use crate::GameState;
 pub use entities::{AltGoalPlugin, EyePlugin, GoalPlugin};

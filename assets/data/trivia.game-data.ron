@@ -1,0 +1,57 @@
+({
+    "pac_man": Question (
+        description: "The main character of this 1980 video game was inspired by the game creator’s lunch: a pizza with a missing slice?",
+        options: ["Pac-Man", "Q-Bert", "Donkey Kong"],
+        answer: "Pac-Man"
+    ),
+    "frogger": Question (
+        description: "What 1981 arcade game features an amphibian trying to cross a road without getting squashed by cars, \n and a river without getting eaten by predators?",
+        options: ["Frogger", "Dig Dug", "Centipede"],
+        answer: "Frogger"
+    ),
+    "yoshi": Question (
+        description: "Making his debut in 1990's 'Super Mario World', \n what is the name of the enemy-eating, egg-throwing green dinosaur?",
+        options: ["Yoshi", "Bowser", "Dino Rhino"],
+        answer: "Yoshi"
+    ),
+    "pong": Question (
+        description: "What was the first commercially successful video game, released in 1972, \n helping to establish the video game industry?",
+        options: ["Pong", "Tank", "Space Race"],
+        answer: "Pong"
+    ),
+    "nintendo_wii": Question (
+        description: "Which video game console released in 2006 pioneered the use of motion controls in its gameplay?",
+        options: ["Nintendo Wii", "Sony Playstation", "Sega Genesis"],
+        answer: "Nintendo Wii"
+    ),
+    "pokemon_go": Question (
+        description: "In 2014, as an April Fool’s Day prank, Google Maps was populated by small creatures. \n This prank inspired what massively popular 2016 video game?",
+        options: ["Pokemon Go", "Pikman", "Angry Birds"],
+        answer: "Pokemon Go"
+    ),
+    "duck_hunt": Question (
+        description: "What 1984 Nintendo video game was meant to be played with the NES Zapper gun?",
+        options: ["Duck Hunt", "Gun Fight", "Hogan’s Alley"],
+        answer: "Duck Hunt"
+    ),
+    "clyde": Question (
+        description: "In the original 1980 edition of Pac-Man, the four ghosts were named Blinky, Inky, Pinky, and what 'C' name that doesn't rhyme with the rest?",
+        options: ["Clyde", "Chuck", "Carl"],
+        answer: "Clyde"
+    ),
+    "chuck_e_cheese": Question (
+        description: "Nolan Bushnell, co-founder of Atari, also founded this ‘pizza and arcade’ restaurant?",
+        options: ["Chuck E. Cheese", "Dave and Buster's", "Fun Factory"],
+        answer: "Chuck E. Cheese"
+    ),
+    "the_sims": Question (
+        description: "What video game allows users to create and customize virtual human beings, allowing full customization and control of their homes and lives?",
+        options: ["The Sims", "Avatar", "Among Us"],
+        answer: "The Sims"
+    ),
+    "bulbasaur": Question (
+        description: "What Pokemon creature is No.1 in the encyclopedic Pokedex and is considered a hybrid of both plants and reptiles?",
+        options: ["Bulbasaur", "Mewtwo", "Pikachu"],
+        answer: "Bulbasaur"
+    ),
+})

@@ -6,37 +6,17 @@ use bevy::prelude::*;
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default, Hash, Component)]
 pub struct Counter;
 
-const MAX_UI_DIGITS: usize = 4;
-
-#[derive(Component, Default, Clone, Debug)]
-pub struct GameUi;
-
 #[derive(Component, Default, Clone, Debug)]
 pub struct GameUiClock;
 
 #[derive(Component, Default, Clone, Debug)]
 pub struct GameUiScore;
 
-#[derive(Component, Default, Clone, Debug)]
-pub struct UiElementIndex(usize);
-
-#[derive(Component, Default, Clone, Debug)]
-pub struct HealthContainerImage;
-
-#[derive(Component, Default, Clone, Debug)]
-pub struct BorkPointNumber;
-
-#[derive(Component, Default, Clone, Debug)]
-pub struct CoinNumber;
-
 #[derive(Resource, Default)]
 pub struct Score(pub(crate) f32);
 
 #[derive(Component)]
 struct ScoreText;
-
-pub const WINDOW_SCALE: f32 = 4.;
-pub const PLAYER_MAX_HEALTH: u32 = 3;
 
 pub struct UiPlugin;
 
@@ -157,108 +137,6 @@ fn spawn_score(mut commands: Commands, font_assets: Res<FontAssets>, assets: Res
                     ..Default::default()
                 })
                 .insert(ScoreText);
-        });
-}
-
-fn spawn_ui(mut commands: Commands, assets: Res<TextureAssets>) {
-    commands
-        .spawn(NodeBundle {
-            style: Style {
-                size: Size::new(Val::Percent(100.), Val::Percent(100.)),
-                justify_content: JustifyContent::SpaceBetween,
-                align_items: AlignItems::FlexEnd,
-                ..Default::default()
-            },
-            ..Default::default()
-        })
-        .insert(GameUi::default())
-        .with_children(|parent| {
-            parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        size: Size::new(Val::Percent(100.), Val::Px(10. * WINDOW_SCALE)),
-                        padding: UiRect {
-                            left: Val::Px(1. * WINDOW_SCALE),
-                            right: Val::Px(1. * WINDOW_SCALE),
-                            top: Val::Px(1. * WINDOW_SCALE),
-                            bottom: Val::Px(1. * WINDOW_SCALE),
-                        },
-                        ..Default::default()
-                    },
-                    background_color: BackgroundColor(Color::rgb(0.098, 0.078, 0.169).into()),
-                    ..Default::default()
-                })
-                .with_children(|parent| {
-                    // Hearth Points Counter
-                    for index in 1..=PLAYER_MAX_HEALTH {
-                        parent
-                            .spawn(ImageBundle {
-                                style: Style {
-                                    size: Size::new(
-                                        Val::Px(8. * WINDOW_SCALE),
-                                        Val::Px(8. * WINDOW_SCALE),
-                                    ),
-                                    ..Default::default()
-                                },
-                                image: assets.heart.clone().into(),
-                                ..Default::default()
-                            })
-                            .insert(UiElementIndex(index as usize))
-                            .insert(HealthContainerImage::default());
-                    }
-
-                    // Bork Points Counter
-                    parent.spawn(ImageBundle {
-                        style: Style {
-                            size: Size::new(Val::Px(8. * WINDOW_SCALE), Val::Px(8. * WINDOW_SCALE)),
-                            ..Default::default()
-                        },
-                        image: assets.potion.clone().into(),
-                        ..Default::default()
-                    });
-                    for index in 1..=MAX_UI_DIGITS {
-                        parent
-                            .spawn(ImageBundle {
-                                style: Style {
-                                    size: Size::new(
-                                        Val::Px(8. * WINDOW_SCALE),
-                                        Val::Px(8. * WINDOW_SCALE),
-                                    ),
-                                    ..Default::default()
-                                },
-                                image: assets.text0.clone().into(),
-                                ..Default::default()
-                            })
-                            .insert(UiElementIndex(MAX_UI_DIGITS + 1 - index))
-                            .insert(BorkPointNumber::default());
-                    }
-
-                    // Coin Counter
-                    parent.spawn(ImageBundle {
-                        style: Style {
-                            size: Size::new(Val::Px(8. * WINDOW_SCALE), Val::Px(8. * WINDOW_SCALE)),
-                            ..Default::default()
-                        },
-                        image: assets.coin.clone().into(),
-                        ..Default::default()
-                    });
-                    for index in 1..=MAX_UI_DIGITS {
-                        parent
-                            .spawn(ImageBundle {
-                                style: Style {
-                                    size: Size::new(
-                                        Val::Px(8. * WINDOW_SCALE),
-                                        Val::Px(8. * WINDOW_SCALE),
-                                    ),
-                                    ..Default::default()
-                                },
-                                image: assets.text0.clone().into(),
-                                ..Default::default()
-                            })
-                            .insert(UiElementIndex(MAX_UI_DIGITS + 1 - index))
-                            .insert(CoinNumber::default());
-                    }
-                });
         });
 }
 
