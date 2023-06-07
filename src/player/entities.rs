@@ -122,6 +122,16 @@ fn player_goal_collision(
 #[derive(Component, Default, Clone)]
 pub struct AltGoal;
 
+impl From<AltGoal> for SpriteSheetAnimation {
+    fn from(_: AltGoal) -> Self {
+        SpriteSheetAnimation {
+            indices: 192..196,
+            frame_timer: Timer::from_seconds(0.1, TimerMode::Repeating),
+            repeat: true,
+        }
+    }
+}
+
 #[derive(Clone, Default, Bundle, LdtkEntity)]
 pub struct AltGoalBundle {
     #[sprite_sheet_bundle]
@@ -146,7 +156,8 @@ pub struct AltGoalPlugin;
 
 impl Plugin for AltGoalPlugin {
     fn build(&self, app: &mut App) {
-        app.register_ldtk_entity::<AltGoalBundle>("Goal_Alt")
+        app.register_ldtk_entity::<AltGoalBundle>("Jumper")
+            .add_plugin(FromComponentPlugin::<AltGoal, SpriteSheetAnimation>::new())
             .add_system(player_alt_goal_collision.in_set(OnUpdate(GameState::Playing)));
     }
 }

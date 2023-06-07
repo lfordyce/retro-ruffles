@@ -158,7 +158,7 @@ fn update_counter(
         let seconds = (remaining % 60.0) as u32;
         let color = if remaining < 30.0 {
             if seconds % 2 == 0 {
-                Color::RED
+                Color::hex("FF004D").unwrap()
             } else {
                 Color::WHITE
             }

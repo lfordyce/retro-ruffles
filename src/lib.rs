@@ -3,7 +3,8 @@ mod animation;
 mod audio;
 mod clock;
 mod console;
-mod game_over;
+mod despawn;
+mod end;
 mod levels;
 mod loading;
 mod menu;
@@ -19,7 +20,6 @@ use crate::menu::MenuPlugin;
 use crate::animation::SpriteSheetAnimationPlugin;
 use crate::clock::ClockPlugin;
 use crate::console::ConsolePlugin;
-use crate::game_over::GameOverPlugin;
 use crate::levels::LevelsPlugin;
 use crate::player::{alt::PlayerAltPlugin, AltGoalPlugin};
 use crate::ui::UiPlugin;
@@ -64,10 +64,10 @@ impl Plugin for GamePlugin {
                 gravity: Vec2::ZERO,
                 ..Default::default()
             })
-            .add_plugin(RapierDebugRenderPlugin {
-                enabled: true,
-                ..default()
-            })
+            // .add_plugin(RapierDebugRenderPlugin {
+            //     enabled: true,
+            //     ..default()
+            // })
             .add_plugin(LoadingPlugin)
             .add_plugin(MenuPlugin)
             .add_plugin(LevelsPlugin { level_index: 0 })
@@ -81,7 +81,10 @@ impl Plugin for GamePlugin {
             // .add_plugin(GoalPlugin)
             .add_plugin(AltGoalPlugin)
             .add_plugin(ConsolePlugin)
-            .add_plugin(GameOverPlugin);
+            // .add_plugin(GameOverPlugin)
+            .add_plugin(end::EndPlugin)
+            .add_plugin(despawn::DespawnPlugin);
+
         // .add_plugin(EyePlugin);
 
         #[cfg(debug_assertions)]

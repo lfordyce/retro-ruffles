@@ -108,7 +108,7 @@ impl From<&EntityInstance> for ColliderBundle {
                 ..Default::default()
             },
             "Goal" => ColliderBundle {
-                collider: Collider::cuboid(8., 8.),
+                collider: Collider::cuboid(4., 4.),
                 rigid_body: RigidBody::Fixed,
                 active_events: ActiveEvents::COLLISION_EVENTS,
                 rotation_constraints,
@@ -125,8 +125,26 @@ impl From<&EntityInstance> for ColliderBundle {
                 rotation_constraints,
                 ..Default::default()
             },
+            // Alternate map
+            "Runner" => ColliderBundle {
+                collider: Collider::ball(4.),
+                rigid_body: RigidBody::Dynamic,
+                friction: Friction {
+                    coefficient: 0.1,
+                    combine_rule: CoefficientCombineRule::Min,
+                },
+                rotation_constraints,
+                ..Default::default()
+            },
             "Goal_Alt" => ColliderBundle {
                 collider: Collider::cuboid(8., 8.),
+                rigid_body: RigidBody::Fixed,
+                active_events: ActiveEvents::COLLISION_EVENTS,
+                rotation_constraints,
+                ..Default::default()
+            },
+            "Jumper" => ColliderBundle {
+                collider: Collider::cuboid(4., 4.),
                 rigid_body: RigidBody::Fixed,
                 active_events: ActiveEvents::COLLISION_EVENTS,
                 rotation_constraints,

@@ -1,7 +1,7 @@
 use crate::console::ConsoleData;
 use crate::loading::{FontAssets, Question, TextureAssets};
 use crate::ui::Score;
-use crate::LevelState;
+use crate::{GameState, LevelState};
 use bevy::asset::HandleId;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
@@ -191,6 +191,12 @@ pub struct PotionMixSlot {
     pub index: usize,
 }
 
+#[derive(Reflect, Component, Default)]
+#[reflect(Component)]
+pub struct SelectedQuestion {
+    question: Handle<Question>,
+}
+
 #[derive(Reflect, Component, Default, PartialEq, Eq, Clone)]
 #[reflect(Component)]
 pub struct BtnGridPos {
@@ -238,7 +244,11 @@ pub fn setup(
     // let mut questions: Vec<(HandleId, &Question)> = questions.clone().iter().collect();
     // let picked = questions.iter().choose(&mut thread_rng()).unwrap();
 
-    let (_id, picked) = questions.iter_mut().choose(&mut thread_rng()).unwrap();
+    let (id, picked) = questions
+        .iter_mut()
+        .filter(|(idx, q)| !q.used)
+        .choose(&mut thread_rng())
+        .unwrap();
     // let choices = out.clone();
     // (0..questions.len())
 
@@ -273,8 +283,10 @@ pub fn setup(
                         .spawn(NodeBundle {
                             style: Style {
                                 size: Size::new(Val::Percent(100.0), Val::Px(110.0)),
-                                justify_content: JustifyContent::Center,
+                                justify_content: JustifyContent::SpaceAround,
                                 align_items: AlignItems::Center,
+                                flex_direction: FlexDirection::Row,
+                                // flex_wrap: FlexWrap::Wrap,
                                 ..Default::default()
                             },
                             background_color: BackgroundColor(Color::NONE.into()),
@@ -282,14 +294,31 @@ pub fn setup(
                         })
                         .with_children(|parent| {
                             // Title text
-                            parent.spawn(TextBundle::from_section(
-                                picked.clone().description,
-                                TextStyle {
-                                    font: font_assets.pixel_font.clone(),
-                                    font_size: 15.0,
-                                    color: Color::WHITE,
-                                },
-                            ));
+                            parent.spawn(
+                                TextBundle::from_section(
+                                    picked.clone().description,
+                                    TextStyle {
+                                        font: font_assets.pixel_font.clone(),
+                                        font_size: 18.0,
+                                        color: Color::WHITE,
+                                    },
+                                )
+                                .with_text_alignment(TextAlignment::Center)
+                                .with_style(Style {
+                                    position_type: PositionType::Absolute,
+                                    position: UiRect {
+                                        top: Val::Px(30.0),
+                                        left: Val::Px(15.0),
+                                        right: Val::Px(15.0),
+                                        ..default()
+                                    },
+                                    max_size: Size {
+                                        width: Val::Px(1000.),
+                                        height: Val::Undefined,
+                                    },
+                                    ..default()
+                                }),
+                            );
                         });
 
                     // Buttons wrapper
@@ -351,6 +380,9 @@ pub fn setup(
                                                     ..Default::default()
                                                 },
                                                 BtnGridPos::new(pos, choice.clone()),
+                                                SelectedQuestion {
+                                                    question: Handle::weak(id),
+                                                },
                                                 Name::new("Choice Slot"),
                                             ))
                                             .with_children(|parent| {
@@ -453,13 +485,28 @@ pub fn setup(
 }
 
 pub fn button_interaction_system(
-    element_button_query: Query<(&Interaction, &BtnGridPos), (With<Button>, Changed<Interaction>)>,
+    element_button_query: Query<
+        (&Interaction, &BtnGridPos, &SelectedQuestion),
+        (With<Button>, Changed<Interaction>),
+    >,
     mut state: ResMut<AbilityMenuState>,
+    mut questions: ResMut<Assets<Question>>,
+    mut score: ResMut<Score>,
+    mut level_state: ResMut<NextState<LevelState>>,
 ) {
-    for (interaction, grid_pos) in &element_button_query {
+    for (interaction, grid_pos, selected_question) in &element_button_query {
         match *interaction {
             Interaction::Clicked => {
-                info!("clicked: {}", grid_pos.choice)
+                if let Some(handle) = questions.get_mut(&selected_question.question) {
+                    handle.used = true;
+                    if &handle.answer == &grid_pos.choice {
+                        info!("CORRECT ANSWER: {}", grid_pos.choice);
+                        score.0 += 1.;
+                        level_state.set(LevelState::OverWorld);
+                    } else {
+                        info!("WRONG!: {}", grid_pos.choice)
+                    }
+                }
             }
             Interaction::Hovered => {
                 state.selected_pos = grid_pos.clone();
@@ -486,9 +533,13 @@ pub fn button_mouse_select(
 }
 
 pub fn button_keyboard_select(
-    element_button_query: Query<&BtnGridPos>,
+    element_button_query: Query<(&BtnGridPos, &SelectedQuestion)>,
     mut state: ResMut<AbilityMenuState>,
     keyboard_input: Res<Input<KeyCode>>,
+    mut questions: ResMut<Assets<Question>>,
+    mut score: ResMut<Score>,
+    mut level_state: ResMut<NextState<LevelState>>,
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Down) {
         state.selected_pos.row += 1;
@@ -504,9 +555,24 @@ pub fn button_keyboard_select(
         }
     }
     if keyboard_input.just_pressed(KeyCode::Z) {
-        for grid_pos in element_button_query.iter() {
+        for (grid_pos, selected_question) in element_button_query.iter() {
             if grid_pos.row == state.selected_pos.row {
-                info!("key code select: {}", grid_pos.choice);
+                // info!("key code select: {}", grid_pos.choice);
+                if let Some(handle) = questions.get_mut(&selected_question.question) {
+                    handle.used = true;
+                    if &handle.answer == &grid_pos.choice {
+                        info!("CORRECT ANSWER: {}", grid_pos.choice);
+                        score.0 += 1.;
+                        if score.0 >= 5. {
+                            game_state.set(GameState::WinScreen);
+                            level_state.set(LevelState::OverWorld);
+                        } else {
+                            level_state.set(LevelState::OverWorld);
+                        }
+                    } else {
+                        info!("WRONG!: {}", grid_pos.choice)
+                    }
+                }
                 return;
             }
         }
@@ -545,7 +611,7 @@ pub fn destroy_console_state_entities(
     mut commands: Commands,
     // entities_query: Query<Entity, With<super::ConsoleStateEntity>>,
     entities_query: Query<Entity, With<UiRootNode>>,
-    mut score: ResMut<Score>,
+    // mut score: ResMut<Score>,
     mut keyboard: ResMut<Input<KeyCode>>,
 ) {
     info!("[ConsolePlugin] Destroying state entities before exiting...");
@@ -553,7 +619,7 @@ pub fn destroy_console_state_entities(
     for entity in entities_query.iter() {
         commands.entity(entity).despawn_recursive();
     }
-    score.0 += 1.;
+    // score.0 += 1.;
     keyboard.clear();
     info!("[ConsolePlugin] Exiting console state")
 }

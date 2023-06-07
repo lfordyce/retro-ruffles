@@ -4,6 +4,7 @@ mod utils;
 
 use crate::{GameState, LevelState};
 
+use crate::console::systems::SelectedQuestion;
 use bevy::prelude::{
     in_state, Component, IntoSystemAppConfig, IntoSystemConfigs, OnEnter, OnExit, OnUpdate, Plugin,
     Reflect, Resource,
@@ -30,6 +31,7 @@ pub struct ConsolePlugin;
 impl Plugin for ConsolePlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.init_resource::<ConsoleData>()
+            .register_type::<SelectedQuestion>()
             .add_event::<event::PrintToConsoleEvent>()
             .add_system(systems::setup.in_schedule(OnEnter(LevelState::Console)))
             .add_systems(

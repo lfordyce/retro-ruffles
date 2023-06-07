@@ -12,12 +12,12 @@ use winit::window::Icon;
 fn main() {
     App::new()
         .insert_resource(Msaa::Off)
-        .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))
+        .insert_resource(ClearColor(Color::rgb(0., 0., 0.)))
         .add_plugins(
             DefaultPlugins
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        title: "🦩 Retro Ruffles 🦩".into(),
+                        title: "🦩 FLAMIN-GO 🦩".into(),
                         canvas: Some("#bevy".to_owned()),
                         ..default()
                     }),
