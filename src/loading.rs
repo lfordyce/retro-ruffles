@@ -128,6 +128,30 @@ pub struct QuestionAssets {
     pub the_sims: Handle<Question>,
     #[asset(key = "bulbasaur")]
     pub bulbasaur: Handle<Question>,
+    #[asset(key = "first_bash")]
+    pub first_bash: Handle<Question>,
+    #[asset(key = "mega_event")]
+    pub mega_event: Handle<Question>,
+    #[asset(key = "golf_ball")]
+    pub golf_ball: Handle<Question>,
+    #[asset(key = "area_51")]
+    pub area_51: Handle<Question>,
+    #[asset(key = "pennsylvania")]
+    pub pennsylvania: Handle<Question>,
+    #[asset(key = "wauseon")]
+    pub wauseon: Handle<Question>,
+    #[asset(key = "tin_foil_hat")]
+    pub tin_foil_hat: Handle<Question>,
+    #[asset(key = "hat_on")]
+    pub hat_on: Handle<Question>,
+    #[asset(key = "swag")]
+    pub swag: Handle<Question>,
+    #[asset(key = "favorited")]
+    pub favorited: Handle<Question>,
+    #[asset(key = "orginial")]
+    pub orginial: Handle<Question>,
+    #[asset(key = "no_geobash")]
+    pub no_geobash: Handle<Question>,
 }
 
 // the following asset collections will be loaded during the State `GameState::Loading`

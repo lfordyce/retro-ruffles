@@ -54,4 +54,64 @@
         options: ["Bulbasaur", "Mewtwo", "Pikachu"],
         answer: "Bulbasaur"
     ),
+    "first_bash": Question(
+        description: "When did the FIRST Midwest Geobash take place?",
+        options: ["2004", "2005", "2010"],
+        answer: "2005"
+    ),
+    "mega_event": Question(
+        description: "What year did the Midwest Geobash became a Mega-Event?",
+        options: ["2006", "2011", "2022"],
+        answer: "2006"
+    ),
+    "golf_ball": Question(
+        description: "If you find a golf ball at the Midwest Geobash it likely belongs to?",
+        options: ["OnABoat", "Trippy1976", "Fishercacher"],
+        answer: "Trippy1976"
+    ),
+    "area_51": Question(
+        description: "When was Area 51 introduced?",
+        options: ["2006", "2014", "2022"],
+        answer: "2006"
+    ),
+    "pennsylvania": Question(
+        description: "What state has NOT hosted the Midwest Geobash",
+        options: ["Indiana", "Pennsylvania", "Michigan"],
+        answer: "Pennsylvania"
+    ),
+    "wauseon": Question(
+        description: "Midwest Geobash was held in Wauseon, Ohio for the first time in",
+        options: ["2009", "2015", "2023"],
+        answer: "2009"
+    ),
+    "tin_foil_hat": Question(
+        description: "The inaugural Tin Foil Hat event in Area 51 happened in",
+        options: ["2005", "2010", "2013"],
+        answer: "2010"
+    ),
+    "hat_on": Question(
+        description: "If you’re wearing a Tin Foil Hat, you’re probably in",
+        options: ["Spangler Arena", "Area 51", "Wauseon Walmart"],
+        answer: "Area 51"
+    ),
+    "swag": Question(
+        description: "The premium SWAG package available at Midwest Geobash is called the",
+        options: ["Platinum Member", "Flamingo Club", "Super SWAG package"],
+        answer: "Flamingo Club"
+    ),
+    "favorited": Question(
+        description: "The most Favorited Geocache in the Wauseon Area is",
+        options: ["Neopolitan Ice Cream", "Handyman lost his Toolbox", "Sprawl Mart"],
+        answer: "Neopolitan Ice Cream"
+    ),
+    "orginial": Question(
+        description: "The orginial Midwest Geobash was held in Harrison Lake State Park. How did attendees identify their campsites?",
+        options: ["Hung Toilet Paper from the Trees", "Hung signs saying” MWGB Attendee", "Placed Flamingos on their campsites"],
+        answer: "Placed Flamingos on their campsites"
+    ),
+    "no_geobash": Question(
+        description: "What is the only year since 2004 without a Midwest Geobash event?",
+        options: ["2005", "2006", "2020"],
+        answer: "2020"
+    )
 })
