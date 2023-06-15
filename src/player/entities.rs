@@ -95,25 +95,22 @@ fn player_goal_collision(
     mut level_state: ResMut<NextState<LevelState>>,
 ) {
     for collision in collision_events.iter() {
-        match collision {
-            CollisionEvent::Started(a, b, _) => {
-                if player_query.contains(*a) && goal_query.contains(*b)
-                    || player_query.contains(*b) && goal_query.contains(*a)
-                {
-                    info!("bumped into goal");
-                    if *player_query.single() == Vitality::Alive {
-                        if goal_query.contains(*a) {
-                            info!("goal reached... de-spawning goal entity");
-                            commands.entity(*a).despawn_recursive();
-                        } else if goal_query.contains(*b) {
-                            info!("goal reached... de-spawning goal entity");
-                            commands.entity(*b).despawn_recursive();
-                        }
-                        level_state.set(LevelState::Console);
+        if let CollisionEvent::Started(a, b, _) = collision {
+            if player_query.contains(*a) && goal_query.contains(*b)
+                || player_query.contains(*b) && goal_query.contains(*a)
+            {
+                info!("bumped into goal");
+                if *player_query.single() == Vitality::Alive {
+                    if goal_query.contains(*a) {
+                        info!("goal reached... de-spawning goal entity");
+                        commands.entity(*a).despawn_recursive();
+                    } else if goal_query.contains(*b) {
+                        info!("goal reached... de-spawning goal entity");
+                        commands.entity(*b).despawn_recursive();
                     }
+                    level_state.set(LevelState::Console);
                 }
             }
-            _ => (),
         }
     }
 }
@@ -170,25 +167,22 @@ fn player_alt_goal_collision(
     mut level_state: ResMut<NextState<LevelState>>,
 ) {
     for collision in collision_events.iter() {
-        match collision {
-            CollisionEvent::Started(a, b, _) => {
-                if player_query.contains(*a) && goal_query.contains(*b)
-                    || player_query.contains(*b) && goal_query.contains(*a)
-                {
-                    info!("bumped into goal");
-                    if *player_query.single() == Vitality::Alive {
-                        if goal_query.contains(*a) {
-                            info!("goal reached... de-spawning goal entity");
-                            commands.entity(*a).despawn_recursive();
-                        } else if goal_query.contains(*b) {
-                            info!("goal reached... de-spawning goal entity");
-                            commands.entity(*b).despawn_recursive();
-                        }
-                        level_state.set(LevelState::Console);
+        if let CollisionEvent::Started(a, b, _) = collision {
+            if player_query.contains(*a) && goal_query.contains(*b)
+                || player_query.contains(*b) && goal_query.contains(*a)
+            {
+                info!("bumped into goal");
+                if *player_query.single() == Vitality::Alive {
+                    if goal_query.contains(*a) {
+                        info!("goal reached... de-spawning goal entity");
+                        commands.entity(*a).despawn_recursive();
+                    } else if goal_query.contains(*b) {
+                        info!("goal reached... de-spawning goal entity");
+                        commands.entity(*b).despawn_recursive();
                     }
+                    level_state.set(LevelState::Console);
                 }
             }
-            _ => (),
         }
     }
 }

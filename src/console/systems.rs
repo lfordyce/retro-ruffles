@@ -1,195 +1,12 @@
-use crate::console::ConsoleData;
 use crate::loading::{FontAssets, Question, TextureAssets};
 use crate::ui::Score;
 use crate::{GameState, LevelState};
 use bevy::asset::HandleId;
 use bevy::prelude::*;
-use bevy::window::PrimaryWindow;
 use rand::prelude::*;
-use std::fmt::Display;
-
-#[derive(Component, Default, Debug, Clone, Copy, PartialEq, Eq, Reflect)]
-pub struct ConsoleForeground;
-
-#[derive(Component, Default, Debug, Clone, Copy, PartialEq, Eq, Reflect)]
-pub struct LinesArea;
-
-#[derive(Component, Default, Debug, Clone, Copy, PartialEq, Eq, Reflect)]
-pub struct CommandInput;
-
-pub fn console_setup(
-    mut commands: Commands,
-    texture_assets: Res<TextureAssets>,
-    primary_query: Query<&Window, With<PrimaryWindow>>,
-) {
-    info!("[ConsolePlugin] Building console UI");
-    // let Ok(primary) = primary_query.get_single() else {
-    //     return;
-    // };
-
-    let primary = primary_query.get_single().unwrap();
-    info!("W: {} H: {}", primary.width(), primary.height());
-
-    // root component
-    let parent_component = NodeBundle {
-        style: Style {
-            // size: Size::new(Val::Px(1200.), Val::Px(600.)),
-            size: Size::new(Val::Percent(90.), Val::Percent(90.)),
-            position_type: PositionType::Absolute,
-            justify_content: JustifyContent::Center,
-            align_items: AlignItems::Center,
-            position: UiRect {
-                left: Val::Px(10.),
-                bottom: Val::Px(10.),
-                // right: Val::Px(10.),
-                top: Val::Px(95.),
-                ..Default::default()
-            },
-            ..Default::default()
-        },
-        background_color: BackgroundColor(Color::rgba(0.0, 0.0, 0.0, 0.5).into()),
-        ..Default::default()
-    };
-
-    // crt overlay
-    let foreground_component = ImageBundle {
-        style: Style {
-            position_type: PositionType::Absolute,
-            size: Size::new(Val::Px(800.), Val::Px(600.)),
-            // size: Size::new(Val::Px(primary.width()), Val::Px(primary.height())),
-            ..Default::default()
-        },
-        image: texture_assets.crt_overlay.clone().into(),
-        ..Default::default()
-    };
-
-    // console root
-    let console_component = NodeBundle {
-        style: Style {
-            size: Size::new(
-                Val::Px(primary.width() / 2.0),
-                Val::Px(primary.height() / 1.5),
-            ),
-            padding: UiRect {
-                left: Val::Percent(2.0),
-                right: Val::Percent(2.0),
-                top: Val::Percent(2.0),
-                bottom: Val::Percent(2.0),
-            },
-            flex_direction: FlexDirection::ColumnReverse,
-            overflow: Overflow::Hidden,
-            // justify_content: JustifyContent::Center,
-            // align_items: AlignItems::Center,
-            ..Default::default()
-        },
-        background_color: BackgroundColor(Color::rgb_u8(5, 17, 0).into()),
-        ..Default::default()
-    };
-
-    // lines area
-    let lines_container_component = NodeBundle {
-        style: Style {
-            size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-            ..Default::default()
-        },
-        background_color: BackgroundColor(Color::rgba_u8(0, 0, 0, 0).into()),
-        ..Default::default()
-    };
-
-    let lines_component = TextBundle {
-        ..Default::default()
-    };
-
-    // command container
-    let command_container_component = NodeBundle {
-        style: Style {
-            size: Size::new(Val::Percent(100.0), Val::Px(20.0)),
-            flex_wrap: FlexWrap::Wrap,
-            ..Default::default()
-        },
-        background_color: BackgroundColor(Color::rgba_u8(0, 0, 0, 0).into()),
-        ..Default::default()
-    };
-    let command_component = TextBundle {
-        style: Style {
-            size: Size::new(Val::Percent(100.0), Val::Px(20.0)),
-            flex_wrap: FlexWrap::Wrap,
-            ..Default::default()
-        },
-        ..Default::default()
-    };
-
-    // ---------- UI TREE CONSTRUCTION ----------//
-    commands
-        .spawn(parent_component)
-        .with_children(|parent| {
-            // console
-            parent.spawn(console_component).with_children(|parent| {
-                // console lines
-                parent
-                    .spawn(lines_container_component)
-                    .with_children(|parent| {
-                        // placeholder to be populated with lines
-                        parent.spawn(lines_component).insert(LinesArea);
-                    });
-                // console command input
-                parent
-                    .spawn(command_container_component)
-                    .with_children(|parent| {
-                        // placeholder to be populated with the command input
-                        parent.spawn(command_component).insert(CommandInput);
-                    });
-            });
-            // foreground
-            parent.spawn(foreground_component).insert(ConsoleForeground);
-        })
-        .insert(super::ConsoleStateEntity);
-
-    info!("[ConsolePlugin] UI constructed");
-}
-
-#[derive(Component, PartialEq, Eq, Clone, Copy)]
-pub enum Answers {
-    One,
-    Two,
-    Three,
-}
-
-impl Display for Answers {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::One => write!(f, "One"),
-            Self::Two => write!(f, "Two"),
-            Self::Three => write!(f, "Three"),
-        }
-    }
-}
-
-impl Answers {
-    fn variant_from_index(idx: usize) -> Self {
-        match idx {
-            0 => Answers::One,
-            1 => Answers::Two,
-            3 => Answers::Three,
-            _ => Answers::One,
-        }
-    }
-}
 
 #[derive(Component)]
 pub struct UiRootNode;
-#[derive(Component)]
-pub struct Slot1Text;
-#[derive(Component)]
-pub struct Slot2Text;
-#[derive(Component)]
-pub struct CombinationText;
-
-#[derive(Reflect, Component, Default)]
-#[reflect(Component)]
-pub struct PotionMixSlot {
-    pub index: usize,
-}
 
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
@@ -241,16 +58,11 @@ pub fn setup(
         ..Default::default()
     };
 
-    // let mut questions: Vec<(HandleId, &Question)> = questions.clone().iter().collect();
-    // let picked = questions.iter().choose(&mut thread_rng()).unwrap();
-
-    let (id, picked) = questions
+    let (id, picked): (HandleId, &mut Question) = questions
         .iter_mut()
-        .filter(|(idx, q)| !q.used)
+        .filter(|(_idx, q)| !q.used)
         .choose(&mut thread_rng())
         .unwrap();
-    // let choices = out.clone();
-    // (0..questions.len())
 
     commands
         .spawn(NodeBundle {
@@ -260,7 +72,7 @@ pub fn setup(
                 align_items: AlignItems::Center,
                 ..Default::default()
             },
-            background_color: BackgroundColor(Color::rgba(0.0, 0.0, 0.0, 0.5).into()),
+            background_color: Color::rgba(0.0, 0.0, 0.0, 0.5).into(),
             ..Default::default()
         })
         .with_children(|parent| {
@@ -286,10 +98,9 @@ pub fn setup(
                                 justify_content: JustifyContent::SpaceAround,
                                 align_items: AlignItems::Center,
                                 flex_direction: FlexDirection::Row,
-                                // flex_wrap: FlexWrap::Wrap,
                                 ..Default::default()
                             },
-                            background_color: BackgroundColor(Color::NONE.into()),
+                            background_color: Color::NONE.into(),
                             ..Default::default()
                         })
                         .with_children(|parent| {
@@ -331,7 +142,7 @@ pub fn setup(
                                 margin: UiRect::all(Val::Auto),
                                 ..Default::default()
                             },
-                            background_color: BackgroundColor(Color::NONE.into()),
+                            background_color: Color::NONE.into(),
                             ..Default::default()
                         })
                         .with_children(|parent| {
@@ -351,7 +162,7 @@ pub fn setup(
                                         flex_direction: FlexDirection::Column,
                                         ..Default::default()
                                     },
-                                    background_color: BackgroundColor(Color::NONE.into()),
+                                    background_color: Color::NONE.into(),
                                     ..Default::default()
                                 })
                                 .with_children(|parent| {
@@ -373,9 +184,8 @@ pub fn setup(
                                             .spawn((
                                                 ButtonBundle {
                                                     style: button_style.clone(),
-                                                    background_color: BackgroundColor(
-                                                        Color::rgb(0.15, 0.15, 0.15).into(),
-                                                    ),
+                                                    background_color: Color::rgb(0.15, 0.15, 0.15)
+                                                        .into(),
                                                     image: texture_assets.button.clone().into(),
                                                     ..Default::default()
                                                 },
@@ -413,7 +223,7 @@ pub fn setup(
                                 },
                                 ..Default::default()
                             },
-                            background_color: BackgroundColor(Color::NONE.into()),
+                            background_color: Color::NONE.into(),
                             ..Default::default()
                         })
                         .with_children(|parent| {
@@ -427,30 +237,6 @@ pub fn setup(
                             ));
                         });
 
-                    // Combination text wrapper
-                    // parent
-                    //     .spawn(NodeBundle {
-                    //         style: Style {
-                    //             size: Size::new(Val::Percent(100.0), Val::Auto),
-                    //             justify_content: JustifyContent::SpaceAround,
-                    //             align_items: AlignItems::Center,
-                    //             ..Default::default()
-                    //         },
-                    //         background_color: BackgroundColor(Color::NONE.into()),
-                    //         ..Default::default()
-                    //     })
-                    //     .with_children(|parent| {
-                    //         parent
-                    //             .spawn(TextBundle::from_section(
-                    //                 "Some sort of description",
-                    //                 TextStyle {
-                    //                     font: font_assets.pixel_font.clone(),
-                    //                     font_size: 20.0,
-                    //                     color: Color::WHITE,
-                    //                 },
-                    //             ))
-                    //             .insert(CombinationText);
-                    //     });
                     // Buttons help text wrapper
                     parent
                         .spawn(NodeBundle {
@@ -466,7 +252,7 @@ pub fn setup(
                                 },
                                 ..Default::default()
                             },
-                            background_color: BackgroundColor(Color::NONE.into()),
+                            background_color: Color::NONE.into(),
                             ..Default::default()
                         })
                         .with_children(|parent| {
@@ -499,7 +285,7 @@ pub fn button_interaction_system(
             Interaction::Clicked => {
                 if let Some(handle) = questions.get_mut(&selected_question.question) {
                     handle.used = true;
-                    if &handle.answer == &grid_pos.choice {
+                    if handle.answer == grid_pos.choice {
                         info!("CORRECT ANSWER: {}", grid_pos.choice);
                         score.0 += 1.;
                         level_state.set(LevelState::OverWorld);
@@ -527,7 +313,7 @@ pub fn button_mouse_select(
             *color = BackgroundColor(Color::BLUE)
         } else {
             // *color = BackgroundColor(Color::rgb(0.15, 0.45, 0.15).into());
-            *color = BackgroundColor(Color::rgb(0.15, 0.15, 0.15).into());
+            *color = BackgroundColor(Color::rgb(0.15, 0.15, 0.15));
         }
     }
 }
@@ -560,7 +346,7 @@ pub fn button_keyboard_select(
                 // info!("key code select: {}", grid_pos.choice);
                 if let Some(handle) = questions.get_mut(&selected_question.question) {
                     handle.used = true;
-                    if &handle.answer == &grid_pos.choice {
+                    if handle.answer == grid_pos.choice {
                         info!("CORRECT ANSWER: {}", grid_pos.choice);
                         score.0 += 1.;
                         if score.0 >= 5. {
@@ -577,24 +363,6 @@ pub fn button_keyboard_select(
             }
         }
     }
-}
-
-pub fn update_lines_area(
-    data: Res<ConsoleData>,
-    font_assets: Res<FontAssets>,
-    mut lines_area_query: Query<&mut Text, With<LinesArea>>,
-) {
-    let sections_text = data.lines.join("\n");
-    let sections = vec![TextSection {
-        value: sections_text,
-        style: TextStyle {
-            font: font_assets.crt_font.clone(),
-            font_size: 16.,
-            color: Color::rgba_u8(76, 207, 76, 255),
-        },
-    }];
-    let mut text = lines_area_query.single_mut();
-    text.sections = sections;
 }
 
 pub fn close_console_handler(

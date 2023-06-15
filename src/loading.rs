@@ -185,36 +185,6 @@ pub struct TextureAssets {
 
     #[asset(path = "icons/coin.png")]
     pub coin: Handle<Image>,
-
-    #[asset(path = "text/tile-0.png")]
-    pub text0: Handle<Image>,
-
-    #[asset(path = "text/tile-1.png")]
-    pub text1: Handle<Image>,
-
-    #[asset(path = "text/tile-2.png")]
-    pub text2: Handle<Image>,
-
-    #[asset(path = "text/tile-3.png")]
-    pub text3: Handle<Image>,
-
-    #[asset(path = "text/tile-4.png")]
-    pub text4: Handle<Image>,
-
-    #[asset(path = "text/tile-5.png")]
-    pub text5: Handle<Image>,
-
-    #[asset(path = "text/tile-6.png")]
-    pub text6: Handle<Image>,
-
-    #[asset(path = "text/tile-7.png")]
-    pub text7: Handle<Image>,
-
-    #[asset(path = "text/tile-8.png")]
-    pub text8: Handle<Image>,
-
-    #[asset(path = "text/tile-9.png")]
-    pub text9: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]

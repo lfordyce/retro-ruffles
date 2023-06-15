@@ -15,20 +15,10 @@ impl Plugin for EndPlugin {
             .add_system(on_win.in_schedule(OnEnter(GameState::WinScreen)))
             .add_system(reset_state.in_set(OnUpdate(GameState::WinScreen)))
             .add_system(reset_state.in_set(OnUpdate(GameState::GameOver)))
-            // .add_system(watch_for_win.in_set(OnUpdate(GameState::Playing)))
             .add_system(despawn_entity::<EndScreen>.in_schedule(OnExit(GameState::WinScreen)))
             .add_system(despawn_entity::<EndScreen>.in_schedule(OnExit(GameState::GameOver)));
     }
 }
-
-// fn watch_for_win(mut game_state: ResMut<NextState<GameState>>, score: Res<Score>) {
-//     if !score.is_changed() {
-//         return;
-//     }
-//     if score.0 >= 5. {
-//         game_state.set(GameState::WinScreen);
-//     }
-// }
 
 // ------ SYSTEMS ------
 

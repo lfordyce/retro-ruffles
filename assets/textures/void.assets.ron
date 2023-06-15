@@ -1,0 +1,9 @@
+({
+    "void":TextureAtlas (
+        path: "textures/void-break-transparent.png",
+        tile_size_x: 8.,
+        tile_size_y: 8.,
+        columns: 16,
+        rows: 16
+    )
+})

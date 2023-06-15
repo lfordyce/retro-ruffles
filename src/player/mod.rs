@@ -14,7 +14,6 @@ pub enum MovementDirection {
     Up,
     Down,
     Left,
-    Right,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Component, Default)]
@@ -39,7 +38,6 @@ impl From<PlayerAnimationState> for SpriteSheetAnimation {
                 MovementDirection::Up => 60..66,
                 MovementDirection::Down => 30..36,
                 MovementDirection::Left => 45..51,
-                MovementDirection::Right => 45..51,
             },
         };
 
@@ -214,65 +212,15 @@ fn apply_actions(
                 *animation_state = PlayerAnimationState::Moving(MovementDirection::Left)
             }
         }
-        if velocity.linvel.y > 0. {
-            if *animation_state != PlayerAnimationState::Moving(MovementDirection::Up) {
-                *animation_state = PlayerAnimationState::Moving(MovementDirection::Up)
-            }
+        if velocity.linvel.y > 0.
+            && *animation_state != PlayerAnimationState::Moving(MovementDirection::Up)
+        {
+            *animation_state = PlayerAnimationState::Moving(MovementDirection::Up)
         }
-        if velocity.linvel.y < 0. {
-            if *animation_state != PlayerAnimationState::Moving(MovementDirection::Down) {
-                *animation_state = PlayerAnimationState::Moving(MovementDirection::Down)
-            }
+        if velocity.linvel.y < 0.
+            && *animation_state != PlayerAnimationState::Moving(MovementDirection::Down)
+        {
+            *animation_state = PlayerAnimationState::Moving(MovementDirection::Down)
         }
     }
 }
-//
-// fn animate_player(
-//     time: Res<Time>,
-//     mut query: Query<
-//         (
-//             &mut PlayerAnimationState,
-//             &mut TextureAtlasSprite,
-//             &Velocity,
-//         ),
-//         With<Player>,
-//     >,
-// ) {
-//     for (mut animation_state, mut sprite, velocity) in &mut query {
-//         if velocity.0.length() < f32::EPSILON || velocity.0.y.abs() > 0. {
-//             sprite.index = 0;
-//             timer.0.reset();
-//             continue;
-//         }
-//         timer.0.tick(time.delta());
-//         if timer.0.finished() {
-//             sprite.index = (sprite.index + 1) % timer.1;
-//         }
-//     }
-// }
-//
-// fn move_player(
-//     time: Res<Time>,
-//     actions: Res<Actions>,
-//     mut player_query: Query<
-//         (
-//             &mut Transform,
-//             &mut PlayerAnimationState,
-//             &mut TextureAtlasSprite,
-//         ),
-//         With<Player>,
-//     >,
-// ) {
-//     if actions.player_movement.is_none() {
-//         return;
-//     }
-//     let speed = 150.;
-//     let movement = Vec3::new(
-//         actions.player_movement.unwrap().x * speed * time.delta_seconds(),
-//         actions.player_movement.unwrap().y * speed * time.delta_seconds(),
-//         0.,
-//     );
-//     for (mut player_transform, mut _animation_state, mut _sprite) in &mut player_query {
-//         player_transform.translation += movement;
-//     }
-// }

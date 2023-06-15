@@ -5,17 +5,17 @@
         answer: "Pac-Man"
     ),
     "frogger": Question (
-        description: "What 1981 arcade game features an amphibian trying to cross a road without getting squashed by cars, \n and a river without getting eaten by predators?",
+        description: "What 1981 arcade game features an amphibian trying to cross a road without getting squashed by cars, and a river without getting eaten by predators?",
         options: ["Frogger", "Dig Dug", "Centipede"],
         answer: "Frogger"
     ),
     "yoshi": Question (
-        description: "Making his debut in 1990's 'Super Mario World', \n what is the name of the enemy-eating, egg-throwing green dinosaur?",
+        description: "Making his debut in 1990's 'Super Mario World', what is the name of the enemy-eating, egg-throwing green dinosaur?",
         options: ["Yoshi", "Bowser", "Dino Rhino"],
         answer: "Yoshi"
     ),
     "pong": Question (
-        description: "What was the first commercially successful video game, released in 1972, \n helping to establish the video game industry?",
+        description: "What was the first commercially successful video game, released in 1972, helping to establish the video game industry?",
         options: ["Pong", "Tank", "Space Race"],
         answer: "Pong"
     ),
@@ -25,7 +25,7 @@
         answer: "Nintendo Wii"
     ),
     "pokemon_go": Question (
-        description: "In 2014, as an April Fool’s Day prank, Google Maps was populated by small creatures. \n This prank inspired what massively popular 2016 video game?",
+        description: "In 2014, as an April Fool’s Day prank, Google Maps was populated by small creatures. This prank inspired what massively popular 2016 video game?",
         options: ["Pokemon Go", "Pikman", "Angry Birds"],
         answer: "Pokemon Go"
     ),

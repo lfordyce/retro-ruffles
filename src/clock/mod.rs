@@ -56,7 +56,7 @@ pub fn update_time(
         }
     }
 
-    time_since_level_start.0 = time_since_level_start.0 + bevy_time.delta_seconds() * time_scale.0;
+    time_since_level_start.0 += bevy_time.delta_seconds() * time_scale.0;
 
     if time_since_level_start.0 < 0. {
         time_since_level_start.0 = 0.;

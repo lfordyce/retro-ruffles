@@ -177,24 +177,6 @@ fn update_counter(
     }
 }
 
-fn number_to_image(image_assets: TextureAssets, num: Option<&u32>) -> Handle<Image> {
-    let default: u32 = 0;
-    let num = num.unwrap_or(&default);
-    match num {
-        0 => image_assets.text0.clone(),
-        1 => image_assets.text1.clone(),
-        2 => image_assets.text2.clone(),
-        3 => image_assets.text3.clone(),
-        4 => image_assets.text4.clone(),
-        5 => image_assets.text5.clone(),
-        6 => image_assets.text6.clone(),
-        7 => image_assets.text7.clone(),
-        8 => image_assets.text8.clone(),
-        9 => image_assets.text9.clone(),
-        _ => image_assets.text0.clone(),
-    }
-}
-
 fn cleanup(
     mut commands: Commands,
     clock_ui_entity: Query<Entity, With<GameUiClock>>,

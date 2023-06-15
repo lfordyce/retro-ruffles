@@ -9,7 +9,6 @@ mod levels;
 mod loading;
 mod menu;
 mod player;
-mod trigger;
 mod ui;
 
 use crate::actions::ActionsPlugin;
