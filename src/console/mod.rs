@@ -19,10 +19,8 @@ impl Plugin for ConsolePlugin {
             .add_system(systems::setup.in_schedule(OnEnter(LevelState::Console)))
             .add_systems(
                 (
-                    systems::button_interaction_system,
                     systems::button_mouse_select,
                     systems::button_keyboard_select,
-                    systems::close_console_handler,
                 )
                     .in_set(OnUpdate(LevelState::Console))
                     .distributive_run_if(in_state(GameState::Playing)),

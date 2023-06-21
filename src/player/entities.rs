@@ -3,6 +3,7 @@ use bevy_ecs_ldtk::prelude::*;
 use bevy_rapier2d::prelude::{CollisionEvent, Sensor};
 
 use crate::animation::{FromComponentPlugin, SpriteSheetAnimation};
+use crate::loading::Question;
 use crate::player::alt::PlayerAlt;
 use crate::player::{ColliderBundle, Player, Vitality};
 use crate::{GameState, LevelState};
@@ -165,6 +166,8 @@ fn player_alt_goal_collision(
     goal_query: Query<Entity, With<AltGoal>>,
     mut collision_events: EventReader<CollisionEvent>,
     mut level_state: ResMut<NextState<LevelState>>,
+    mut game_state: ResMut<NextState<GameState>>,
+    questions: Res<Assets<Question>>,
 ) {
     for collision in collision_events.iter() {
         if let CollisionEvent::Started(a, b, _) = collision {
@@ -180,7 +183,12 @@ fn player_alt_goal_collision(
                         info!("goal reached... de-spawning goal entity");
                         commands.entity(*b).despawn_recursive();
                     }
-                    level_state.set(LevelState::Console);
+
+                    if questions.iter().all(|(_idx, &ref q)| q.used) {
+                        game_state.set(GameState::GameOver);
+                    } else {
+                        level_state.set(LevelState::Console);
+                    }
                 }
             }
         }

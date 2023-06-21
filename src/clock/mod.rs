@@ -62,8 +62,8 @@ pub fn update_time(
         time_since_level_start.0 = 0.;
         time_scale.0 = 0.;
     }
-    if time_since_level_start.0 > 60. {
-        time_since_level_start.0 = 60.;
+    if time_since_level_start.0 > 180. {
+        time_since_level_start.0 = 180.;
         time_scale.0 = 0.;
         for mut vitality in vitals.iter_mut() {
             *vitality = Vitality::Dead;

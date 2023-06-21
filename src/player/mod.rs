@@ -8,6 +8,8 @@ pub use entities::{AltGoalPlugin, EyePlugin, GoalPlugin};
 use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
 use bevy_rapier2d::prelude::*;
+use leafwing_input_manager::prelude::*;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum MovementDirection {
@@ -69,7 +71,7 @@ pub struct PlayerPlugin;
 #[derive(Component, Default, Clone)]
 pub struct Player;
 
-#[derive(Clone, Default, Bundle, LdtkEntity)]
+#[derive(Default, Bundle, LdtkEntity)]
 pub struct PlayerBundle {
     #[sprite_sheet_bundle]
     #[bundle]
@@ -88,6 +90,9 @@ pub struct PlayerBundle {
     player: Player,
     animation: PlayerAnimationState,
     vitality: Vitality,
+
+    #[bundle]
+    input_manager: InputManagerBundle<PlayerAction>,
 }
 
 impl From<&EntityInstance> for ColliderBundle {
@@ -157,7 +162,8 @@ impl From<&EntityInstance> for ColliderBundle {
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.register_ldtk_entity::<PlayerBundle>("Player")
+        app.add_plugin(InputManagerPlugin::<PlayerAction>::default())
+            .register_ldtk_entity::<PlayerBundle>("Player")
             .add_plugin(FromComponentPlugin::<
                 PlayerAnimationState,
                 SpriteSheetAnimation,
@@ -166,8 +172,16 @@ impl Plugin for PlayerPlugin {
     }
 }
 
+#[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Serialize, Deserialize, Reflect)]
+pub enum PlayerAction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
 fn apply_actions(
-    keyboard_input: Res<Input<KeyCode>>,
+    input: Query<&ActionState<PlayerAction>, With<Player>>,
     mut player_query: Query<
         (
             &mut PlayerAnimationState,
@@ -177,22 +191,37 @@ fn apply_actions(
         With<Player>,
     >,
 ) {
+    let action_state = input.single();
     // if actions.player_movement.is_none() {
     //     return;
     // }
     //
     let mut direction = Vec2::default();
-    if keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up) {
+
+    if action_state.just_pressed(PlayerAction::Up) {
         direction.y = 1.;
-    } else if keyboard_input.pressed(KeyCode::S) || keyboard_input.pressed(KeyCode::Down) {
+    } else if action_state.just_pressed(PlayerAction::Down) {
         direction.y = -1.;
     }
 
-    if keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right) {
+    // if keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up) {
+    //     direction.y = 1.;
+    // } else if keyboard_input.pressed(KeyCode::S) || keyboard_input.pressed(KeyCode::Down) {
+    //     direction.y = -1.;
+    // }
+
+    if action_state.just_pressed(PlayerAction::Right) {
         direction.x = 1.;
-    } else if keyboard_input.pressed(KeyCode::A) || keyboard_input.pressed(KeyCode::Left) {
+    } else if action_state.just_pressed(PlayerAction::Left) {
         direction.x = -1.;
     }
+
+    // if keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right) {
+    //     direction.x = 1.;
+    // } else if keyboard_input.pressed(KeyCode::A) || keyboard_input.pressed(KeyCode::Left) {
+    //     direction.x = -1.;
+    // }
+
     let speed = 100.;
 
     for (mut animation_state, mut velocity, mut sprite) in &mut player_query {

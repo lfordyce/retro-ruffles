@@ -1,8 +1,10 @@
+use crate::actions::UiAction;
 use crate::loading::{FontAssets, Question, TextureAssets};
 use crate::ui::Score;
 use crate::{GameState, LevelState};
 use bevy::asset::HandleId;
 use bevy::prelude::*;
+use leafwing_input_manager::prelude::ActionState;
 use rand::prelude::*;
 
 #[derive(Component)]
@@ -80,7 +82,7 @@ pub fn setup(
             parent
                 .spawn(ImageBundle {
                     style: Style {
-                        size: Size::new(Val::Px(1000.0), Val::Px(600.0)),
+                        size: Size::new(Val::Px(1100.0), Val::Px(600.0)),
                         justify_content: JustifyContent::FlexStart,
                         align_items: AlignItems::Center,
                         flex_direction: FlexDirection::Column,
@@ -119,7 +121,7 @@ pub fn setup(
                                     position_type: PositionType::Absolute,
                                     position: UiRect {
                                         top: Val::Px(30.0),
-                                        left: Val::Px(15.0),
+                                        left: Val::Px(30.0),
                                         right: Val::Px(15.0),
                                         ..default()
                                     },
@@ -208,34 +210,6 @@ pub fn setup(
                                     }
                                 });
                         });
-                    // Header wrapper
-                    parent
-                        .spawn(NodeBundle {
-                            style: Style {
-                                size: Size::new(Val::Percent(100.0), Val::Auto),
-                                justify_content: JustifyContent::SpaceAround,
-                                align_items: AlignItems::Center,
-                                margin: UiRect {
-                                    left: Val::Auto,
-                                    right: Val::Auto,
-                                    top: Val::Px(10.0),
-                                    bottom: Val::Px(10.0),
-                                },
-                                ..Default::default()
-                            },
-                            background_color: Color::NONE.into(),
-                            ..Default::default()
-                        })
-                        .with_children(|parent| {
-                            parent.spawn(TextBundle::from_section(
-                                "Answers:",
-                                TextStyle {
-                                    font: font_assets.pixel_font.clone(),
-                                    font_size: 20.0,
-                                    color: Color::WHITE,
-                                },
-                            ));
-                        });
 
                     // Buttons help text wrapper
                     parent
@@ -248,7 +222,7 @@ pub fn setup(
                                     left: Val::Auto,
                                     right: Val::Auto,
                                     top: Val::Px(10.0),
-                                    bottom: Val::Px(10.0),
+                                    bottom: Val::Px(30.0),
                                 },
                                 ..Default::default()
                             },
@@ -257,10 +231,10 @@ pub fn setup(
                         })
                         .with_children(|parent| {
                             parent.spawn(TextBundle::from_section(
-                                "Use arrow keys & <z> to select. Press <x> when done",
+                                "Use arrow keys & <A> to select",
                                 TextStyle {
                                     font: font_assets.pixel_font.clone(),
-                                    font_size: 15.0,
+                                    font_size: 18.0,
                                     color: Color::WHITE,
                                 },
                             ));
@@ -268,38 +242,6 @@ pub fn setup(
                 });
         })
         .insert(UiRootNode);
-}
-
-pub fn button_interaction_system(
-    element_button_query: Query<
-        (&Interaction, &BtnGridPos, &SelectedQuestion),
-        (With<Button>, Changed<Interaction>),
-    >,
-    mut state: ResMut<AbilityMenuState>,
-    mut questions: ResMut<Assets<Question>>,
-    mut score: ResMut<Score>,
-    mut level_state: ResMut<NextState<LevelState>>,
-) {
-    for (interaction, grid_pos, selected_question) in &element_button_query {
-        match *interaction {
-            Interaction::Clicked => {
-                if let Some(handle) = questions.get_mut(&selected_question.question) {
-                    handle.used = true;
-                    if handle.answer == grid_pos.choice {
-                        info!("CORRECT ANSWER: {}", grid_pos.choice);
-                        score.0 += 1.;
-                        level_state.set(LevelState::OverWorld);
-                    } else {
-                        info!("WRONG!: {}", grid_pos.choice)
-                    }
-                }
-            }
-            Interaction::Hovered => {
-                state.selected_pos = grid_pos.clone();
-            }
-            _ => {}
-        }
-    }
 }
 
 pub fn button_mouse_select(
@@ -321,57 +263,50 @@ pub fn button_mouse_select(
 pub fn button_keyboard_select(
     element_button_query: Query<(&BtnGridPos, &SelectedQuestion)>,
     mut state: ResMut<AbilityMenuState>,
-    keyboard_input: Res<Input<KeyCode>>,
+    mut query: Query<&ActionState<UiAction>>,
     mut questions: ResMut<Assets<Question>>,
     mut score: ResMut<Score>,
     mut level_state: ResMut<NextState<LevelState>>,
     mut game_state: ResMut<NextState<GameState>>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::Down) {
-        state.selected_pos.row += 1;
-        if state.selected_pos.row >= 3 {
-            state.selected_pos.row = 0;
-        }
-    }
-    if keyboard_input.just_pressed(KeyCode::Up) {
-        if state.selected_pos.row == 0 {
-            state.selected_pos.row = 0;
-        } else {
-            state.selected_pos.row -= 1;
-        }
-    }
-    if keyboard_input.just_pressed(KeyCode::Z) {
-        for (grid_pos, selected_question) in element_button_query.iter() {
-            if grid_pos.row == state.selected_pos.row {
-                // info!("key code select: {}", grid_pos.choice);
-                if let Some(handle) = questions.get_mut(&selected_question.question) {
-                    handle.used = true;
-                    if handle.answer == grid_pos.choice {
-                        info!("CORRECT ANSWER: {}", grid_pos.choice);
-                        score.0 += 1.;
-                        if score.0 >= 5. {
-                            game_state.set(GameState::WinScreen);
-                            level_state.set(LevelState::OverWorld);
-                        } else {
-                            level_state.set(LevelState::OverWorld);
-                        }
-                    } else {
-                        info!("WRONG!: {}", grid_pos.choice)
-                    }
-                }
-                return;
+    for action_state in &mut query {
+        if action_state.just_pressed(UiAction::Down) {
+            state.selected_pos.row += 1;
+            if state.selected_pos.row >= 3 {
+                state.selected_pos.row = 0;
             }
         }
-    }
-}
-
-pub fn close_console_handler(
-    mut keyboard: ResMut<Input<KeyCode>>,
-    mut level_state: ResMut<NextState<LevelState>>,
-) {
-    if keyboard.just_pressed(KeyCode::Escape) {
-        level_state.set(LevelState::OverWorld);
-        keyboard.reset(KeyCode::Escape);
+        if action_state.just_pressed(UiAction::Up) {
+            if state.selected_pos.row == 0 {
+                state.selected_pos.row = 0;
+            } else {
+                state.selected_pos.row -= 1;
+            }
+        }
+        if action_state.just_pressed(UiAction::Select) {
+            for (grid_pos, selected_question) in element_button_query.iter() {
+                if grid_pos.row == state.selected_pos.row {
+                    // info!("key code select: {}", grid_pos.choice);
+                    if let Some(handle) = questions.get_mut(&selected_question.question) {
+                        handle.used = true;
+                        if handle.answer == grid_pos.choice {
+                            info!("CORRECT ANSWER: {}", grid_pos.choice);
+                            score.0 += 1.;
+                            if score.0 >= 5. {
+                                game_state.set(GameState::WinScreen);
+                                level_state.set(LevelState::OverWorld);
+                            } else {
+                                level_state.set(LevelState::OverWorld);
+                            }
+                        } else {
+                            info!("WRONG!: {}", grid_pos.choice);
+                            level_state.set(LevelState::Console);
+                        }
+                    }
+                    return;
+                }
+            }
+        }
     }
 }
 

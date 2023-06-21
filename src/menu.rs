@@ -1,6 +1,8 @@
+use crate::actions::UiAction;
 use crate::loading::FontAssets;
 use crate::{GameState, LevelState};
 use bevy::prelude::*;
+use leafwing_input_manager::prelude::*;
 
 pub struct MenuPlugin;
 
@@ -21,14 +23,12 @@ pub struct LevelStart;
 #[derive(Resource)]
 struct ButtonColors {
     normal: Color,
-    hovered: Color,
 }
 
 impl Default for ButtonColors {
     fn default() -> Self {
         ButtonColors {
             normal: Color::rgb(0.15, 0.15, 0.15),
-            hovered: Color::rgb(0.25, 0.25, 0.25),
         }
     }
 }
@@ -51,6 +51,10 @@ fn setup_menu(
             background_color: button_colors.normal.into(),
             ..Default::default()
         })
+        // .insert(ActionStateDriver {
+        //     action: UiAction::Start,
+        //     entity: (),
+        // })
         .with_children(|parent| {
             parent.spawn(TextBundle::from_section(
                 "PLAY",
@@ -64,28 +68,16 @@ fn setup_menu(
 }
 
 fn click_play_button(
-    button_colors: Res<ButtonColors>,
     mut state: ResMut<NextState<GameState>>,
     mut level_state: ResMut<NextState<LevelState>>,
-    mut interaction_query: Query<
-        (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<Button>),
-    >,
+    mut query: Query<&ActionState<UiAction>>,
     mut level_start_events: EventWriter<LevelStart>,
 ) {
-    for (interaction, mut color) in &mut interaction_query {
-        match *interaction {
-            Interaction::Clicked => {
-                state.set(GameState::Playing);
-                level_state.set(LevelState::OverWorld);
-                level_start_events.send(LevelStart);
-            }
-            Interaction::Hovered => {
-                *color = button_colors.hovered.into();
-            }
-            Interaction::None => {
-                *color = button_colors.normal.into();
-            }
+    for action_state in &mut query {
+        if action_state.pressed(UiAction::Start) {
+            state.set(GameState::Playing);
+            level_state.set(LevelState::OverWorld);
+            level_start_events.send(LevelStart);
         }
     }
 }

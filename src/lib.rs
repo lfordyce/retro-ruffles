@@ -1,6 +1,5 @@
 mod actions;
 mod animation;
-mod audio;
 mod clock;
 mod console;
 mod despawn;
@@ -12,7 +11,6 @@ mod player;
 mod ui;
 
 use crate::actions::ActionsPlugin;
-use crate::audio::InternalAudioPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 
@@ -72,7 +70,6 @@ impl Plugin for GamePlugin {
             .add_plugin(LevelsPlugin { level_index: 0 })
             .add_plugin(ActionsPlugin)
             .add_plugin(SpriteSheetAnimationPlugin)
-            .add_plugin(InternalAudioPlugin)
             .add_plugin(ClockPlugin)
             .add_plugin(UiPlugin)
             // .add_plugin(PlayerPlugin)
@@ -83,8 +80,6 @@ impl Plugin for GamePlugin {
             // .add_plugin(GameOverPlugin)
             .add_plugin(end::EndPlugin)
             .add_plugin(despawn::DespawnPlugin);
-
-        // .add_plugin(EyePlugin);
 
         #[cfg(debug_assertions)]
         {

@@ -23,7 +23,6 @@ impl Plugin for LoadingPlugin {
         .add_asset::<Question>()
         .add_loading_state(LoadingState::new(GameState::Loading).continue_to_state(GameState::Menu))
         .add_collection_to_loading_state::<_, FontAssets>(GameState::Loading)
-        .add_collection_to_loading_state::<_, AudioAssets>(GameState::Loading)
         .add_collection_to_loading_state::<_, TextureAssets>(GameState::Loading)
         .add_collection_to_loading_state::<_, LevelAssets>(GameState::Loading)
         .add_dynamic_collection_to_loading_state::<_, GameDataAssetDynamicCollection>(
