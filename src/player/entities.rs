@@ -154,8 +154,8 @@ pub struct AltGoalPlugin;
 
 impl Plugin for AltGoalPlugin {
     fn build(&self, app: &mut App) {
-        app.register_ldtk_entity::<AltGoalBundle>("Jumper")
-            .add_plugin(FromComponentPlugin::<AltGoal, SpriteSheetAnimation>::new())
+        app.register_ldtk_entity::<AltGoalBundle>("Goal_Alt")
+            // .add_plugin(FromComponentPlugin::<AltGoal, SpriteSheetAnimation>::new())
             .add_system(player_alt_goal_collision.in_set(OnUpdate(GameState::Playing)));
     }
 }

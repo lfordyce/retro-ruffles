@@ -3,7 +3,7 @@ mod event_scheduler;
 use crate::clock::event_scheduler::EventSchedulerPlugin;
 use crate::menu::LevelStart;
 use crate::player::Vitality;
-use crate::GameState;
+use crate::{GameState, LevelState};
 use bevy::prelude::*;
 
 pub struct ClockPlugin;
@@ -46,6 +46,7 @@ pub fn update_time(
     mut time_events: EventWriter<TimeEvent>,
     mut vitals: Query<&mut Vitality>,
     mut level_state: ResMut<NextState<GameState>>,
+    mut game_state: ResMut<NextState<LevelState>>,
 ) {
     for _ in level_events.iter() {
         time_scale.0 = 1.;
@@ -67,6 +68,7 @@ pub fn update_time(
         time_scale.0 = 0.;
         for mut vitality in vitals.iter_mut() {
             *vitality = Vitality::Dead;
+            game_state.set(LevelState::OverWorld);
             level_state.set(GameState::GameOver)
         }
     }

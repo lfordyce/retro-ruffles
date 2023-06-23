@@ -212,7 +212,7 @@ pub struct TextureAssets {
 
 #[derive(AssetCollection, Resource)]
 pub struct LevelAssets {
-    // #[asset(path = "textures/level.ldtk")]
-    #[asset(path = "textures/level_alt.ldtk")]
+    #[asset(path = "level/level.ldtk")]
+    // #[asset(path = "textures/level_alt.ldtk")]
     pub level: Handle<LdtkAsset>,
 }

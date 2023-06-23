@@ -11,25 +11,25 @@ pub struct PlayerAltPlugin;
 #[derive(Component, Default, Clone)]
 pub struct PlayerAlt;
 
-// impl From<PlayerAlt> for SpriteSheetAnimation {
-//     fn from(_: PlayerAlt) -> Self {
-//         SpriteSheetAnimation {
-//             indices: 0..4,
-//             frame_timer: Timer::from_seconds(0.2, TimerMode::Repeating),
-//             repeat: true,
-//         }
-//     }
-// }
-
 impl From<PlayerAlt> for SpriteSheetAnimation {
     fn from(_: PlayerAlt) -> Self {
         SpriteSheetAnimation {
-            indices: 65..71,
-            frame_timer: Timer::from_seconds(0.1, TimerMode::Repeating),
+            indices: 0..4,
+            frame_timer: Timer::from_seconds(0.2, TimerMode::Repeating),
             repeat: true,
         }
     }
 }
+
+// impl From<PlayerAlt> for SpriteSheetAnimation {
+//     fn from(_: PlayerAlt) -> Self {
+//         SpriteSheetAnimation {
+//             indices: 65..71,
+//             frame_timer: Timer::from_seconds(0.1, TimerMode::Repeating),
+//             repeat: true,
+//         }
+//     }
+// }
 
 #[derive(Bundle)]
 pub struct PlayerInput {
@@ -96,7 +96,7 @@ pub struct PlayerAltBundle {
 impl Plugin for PlayerAltPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(InputManagerPlugin::<PlayerAction>::default())
-            .register_ldtk_entity::<PlayerAltBundle>("Runner")
+            .register_ldtk_entity::<PlayerAltBundle>("Crab")
             .add_plugin(FromComponentPlugin::<PlayerAlt, SpriteSheetAnimation>::new())
             .add_system(apply_alt_actions.in_set(OnUpdate(GameState::Playing)));
     }
