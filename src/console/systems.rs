@@ -9,6 +9,12 @@ use rand::prelude::*;
 #[derive(Component)]
 pub struct UiRootNode;
 
+#[derive(Component)]
+pub struct WrongRootNode;
+
+#[derive(Resource, Deref, DerefMut)]
+pub struct SplashTimer(Timer);
+
 #[derive(Reflect, Component, Default)]
 #[reflect(Component)]
 pub struct SelectedQuestion {
@@ -31,6 +37,95 @@ impl BtnGridPos {
 #[derive(Default, Resource)]
 pub struct AbilityMenuState {
     pub selected_pos: BtnGridPos,
+}
+
+pub fn setup_splash(
+    mut commands: Commands,
+    font_assets: Res<FontAssets>,
+    texture_assets: Res<TextureAssets>,
+) {
+    commands
+        .spawn((
+            NodeBundle {
+                style: Style {
+                    size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..Default::default()
+                },
+                background_color: Color::rgba(0.0, 0.0, 0.0, 0.5).into(),
+                ..Default::default()
+            },
+            WrongRootNode,
+        ))
+        .with_children(|parent| {
+            // Main box
+            parent
+                .spawn(ImageBundle {
+                    style: Style {
+                        size: Size::new(Val::Px(1100.0), Val::Px(600.0)),
+                        justify_content: JustifyContent::FlexStart,
+                        align_items: AlignItems::Center,
+                        flex_direction: FlexDirection::Column,
+                        ..Default::default()
+                    },
+                    image: texture_assets.menu_background.clone().into(),
+                    ..Default::default()
+                })
+                .with_children(|parent| {
+                    // Title text wrapper
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                size: Size::new(Val::Percent(100.0), Val::Px(110.0)),
+                                justify_content: JustifyContent::SpaceAround,
+                                align_items: AlignItems::Center,
+                                flex_direction: FlexDirection::Row,
+                                ..Default::default()
+                            },
+                            background_color: Color::NONE.into(),
+                            ..Default::default()
+                        })
+                        .with_children(|parent| {
+                            // Title text
+                            parent.spawn(
+                                TextBundle::from_section(
+                                    "WRONG",
+                                    TextStyle {
+                                        font: font_assets.pixel_font.clone(),
+                                        font_size: 96.0,
+                                        color: Color::RED,
+                                    },
+                                )
+                                .with_text_alignment(TextAlignment::Center)
+                                .with_style(Style {
+                                    position_type: PositionType::Absolute,
+                                    position: UiRect {
+                                        top: Val::Px(240.0),
+                                        ..default()
+                                    },
+                                    max_size: Size {
+                                        width: Val::Px(1000.),
+                                        height: Val::Undefined,
+                                    },
+                                    ..default()
+                                }),
+                            );
+                        });
+                });
+        });
+
+    commands.insert_resource(SplashTimer(Timer::from_seconds(2.0, TimerMode::Once)));
+}
+
+pub fn countdown(
+    mut level_state: ResMut<NextState<LevelState>>,
+    time: Res<Time>,
+    mut timer: ResMut<SplashTimer>,
+) {
+    if timer.tick(time.delta()).finished() {
+        level_state.set(LevelState::Console);
+    }
 }
 
 pub fn setup(
@@ -316,7 +411,7 @@ pub fn button_keyboard_select(
                             }
                         } else {
                             info!("WRONG!: {}", grid_pos.choice);
-                            level_state.set(LevelState::Console);
+                            level_state.set(LevelState::Wrong);
                         }
                     }
                     return;
@@ -328,9 +423,7 @@ pub fn button_keyboard_select(
 
 pub fn destroy_console_state_entities(
     mut commands: Commands,
-    // entities_query: Query<Entity, With<super::ConsoleStateEntity>>,
     entities_query: Query<Entity, With<UiRootNode>>,
-    // mut score: ResMut<Score>,
     mut keyboard: ResMut<Input<KeyCode>>,
 ) {
     info!("[ConsolePlugin] Destroying state entities before exiting...");
@@ -338,7 +431,19 @@ pub fn destroy_console_state_entities(
     for entity in entities_query.iter() {
         commands.entity(entity).despawn_recursive();
     }
-    // score.0 += 1.;
     keyboard.clear();
     info!("[ConsolePlugin] Exiting console state")
+}
+
+pub fn destroy_wrong_state_entities(
+    mut commands: Commands,
+    entities_query: Query<Entity, With<WrongRootNode>>,
+    mut keyboard: ResMut<Input<KeyCode>>,
+) {
+    info!("[ConsolePlugin] Destroying wrong state entities before exiting...");
+    for entity in entities_query.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+    keyboard.clear();
+    info!("[ConsolePlugin] Exiting wrong console state")
 }

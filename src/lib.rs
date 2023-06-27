@@ -38,6 +38,7 @@ pub enum GameState {
     Playing,
     // Here the menu is drawn and waiting for player interaction
     Menu,
+    Controls,
     GameOver,
     WinScreen,
 }
@@ -48,6 +49,7 @@ pub enum LevelState {
     None,
     OverWorld,
     Console,
+    Wrong,
 }
 
 pub struct GamePlugin;

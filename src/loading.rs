@@ -172,6 +172,9 @@ pub struct FontAssets {
 
     #[asset(path = "fonts/prstartk.ttf")]
     pub pixel_font: Handle<Font>,
+
+    #[asset(path = "fonts/EsquireGenericGamepdFont_CL.ttf")]
+    pub gamepad_font: Handle<Font>,
 }
 
 #[derive(AssetCollection, Resource)]
@@ -182,6 +185,9 @@ pub struct AudioAssets {
 
 #[derive(AssetCollection, Resource)]
 pub struct TextureAssets {
+    #[asset(path = "textures/PRESS_START.png")]
+    pub press_start: Handle<Image>,
+
     #[asset(path = "textures/menu_background.png")]
     pub menu_background: Handle<Image>,
 

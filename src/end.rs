@@ -5,7 +5,6 @@ use leafwing_input_manager::prelude::ActionState;
 use crate::actions::UiAction;
 use crate::despawn::despawn_entity;
 use crate::loading::{FontAssets, Question};
-use crate::menu::LevelStart;
 use crate::ui::Score;
 use crate::{GameState, LevelState};
 
@@ -30,15 +29,13 @@ fn reset_state(
     mut game_phase: ResMut<NextState<LevelState>>,
     mut score: ResMut<Score>,
     mut questions: ResMut<Assets<Question>>,
-    mut level_start_events: EventWriter<LevelStart>,
 ) {
     for action_state in &query {
         if action_state.just_pressed(UiAction::Start) {
             *score = Score::default();
             questions.iter_mut().for_each(|i| i.1.used = false);
-            game_state.set(GameState::Playing);
-            game_phase.set(LevelState::OverWorld);
-            level_start_events.send(LevelStart);
+            game_phase.set(LevelState::None);
+            game_state.set(GameState::Controls);
         }
     }
 }

@@ -17,6 +17,7 @@ impl Plugin for ConsolePlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.register_type::<SelectedQuestion>()
             .add_system(systems::setup.in_schedule(OnEnter(LevelState::Console)))
+            .add_system(systems::setup_splash.in_schedule(OnEnter(LevelState::Wrong)))
             .add_systems(
                 (
                     systems::button_mouse_select,
@@ -25,8 +26,16 @@ impl Plugin for ConsolePlugin {
                     .in_set(OnUpdate(LevelState::Console))
                     .distributive_run_if(in_state(GameState::Playing)),
             )
+            .add_systems(
+                (systems::countdown,)
+                    .in_set(OnUpdate(LevelState::Wrong))
+                    .distributive_run_if(in_state(GameState::Playing)),
+            )
             .add_system(
                 systems::destroy_console_state_entities.in_schedule(OnExit(LevelState::Console)),
+            )
+            .add_system(
+                systems::destroy_wrong_state_entities.in_schedule(OnExit(LevelState::Wrong)),
             );
     }
 }
