@@ -135,7 +135,7 @@ fn setup_controls_menu(
                     parent
                         .spawn(NodeBundle {
                             style: Style {
-                                size: Size::new(Val::Percent(100.0), Val::Auto),
+                                size: Size::new(Val::Percent(65.0), Val::Auto),
                                 justify_content: JustifyContent::Center,
                                 align_items: AlignItems::Center,
                                 margin: UiRect::all(Val::Auto),
@@ -254,7 +254,7 @@ fn setup_controls_menu(
                                     // A button
                                     parent.spawn(
                                         TextBundle::from_section(
-                                            "SELECT QUESTION",
+                                            "SELECT YOUR ANSWER",
                                             TextStyle {
                                                 font: font_assets.pixel_font.clone(),
                                                 font_size: 24.0,
@@ -266,7 +266,7 @@ fn setup_controls_menu(
                                     // Start button
                                     parent.spawn(
                                         TextBundle::from_section(
-                                            "START TO CONTINUE",
+                                            "TO CONTINUE...",
                                             TextStyle {
                                                 font: font_assets.pixel_font.clone(),
                                                 font_size: 24.0,

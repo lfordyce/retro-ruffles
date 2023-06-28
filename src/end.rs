@@ -102,40 +102,96 @@ fn build_end_screen(commands: &mut Commands, asset_holder: &Res<FontAssets>, win
         .with_children(|parent| {
             parent.spawn(
                 TextBundle::from_section(
-                    if win { "YOU WIN!" } else { "GAME OVER!" },
+                    if win {
+                        "YOU WIN!\nCOLLECT A PATH TAG!"
+                    } else {
+                        "GAME OVER!"
+                    },
                     TextStyle {
                         font: asset_holder.crt_font.clone(),
                         font_size: 96.,
-                        color: Color::RED,
+                        color: if win { Color::PINK } else { Color::RED },
                     },
                 )
                 .with_text_alignment(TextAlignment::Center),
             );
-
-            parent
-                .spawn((
-                    ButtonBundle {
-                        style: Style {
-                            size: Size::new(Val::Px(250.0), Val::Px(65.0)),
-                            margin: UiRect::all(Val::Px(20.0)),
-                            justify_content: JustifyContent::Center,
-                            align_items: AlignItems::Center,
-                            ..default()
-                        },
-                        background_color: Color::hex("#ffecd6").unwrap().into(),
-                        ..default()
-                    },
-                    ResetButton,
-                ))
-                .with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(
-                        "Play Again",
+            if win {
+                parent.spawn(
+                    TextBundle::from_section(
+                        "(Limit of 1 path tag per family please)",
                         TextStyle {
                             font: asset_holder.crt_font.clone(),
                             font_size: 48.,
-                            color: Color::RED,
+                            color: Color::PINK,
+                        },
+                    )
+                    .with_text_alignment(TextAlignment::Center),
+                );
+            }
+
+            parent
+                .spawn(NodeBundle {
+                    style: Style {
+                        flex_direction: FlexDirection::Row,
+                        align_self: AlignSelf::Center,
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
+                        ..default()
+                    },
+                    background_color: Color::NONE.into(),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent.spawn(TextBundle::from_section(
+                        "PRESS",
+                        TextStyle {
+                            font: asset_holder.crt_font.clone(),
+                            font_size: 48.,
+                            color: Color::WHITE,
+                        },
+                    ));
+                    parent.spawn(TextBundle::from_section(
+                        "V",
+                        TextStyle {
+                            font: asset_holder.gamepad_font.clone(),
+                            font_size: 48.,
+                            color: Color::WHITE,
+                        },
+                    ));
+                    parent.spawn(TextBundle::from_section(
+                        "TO RESTART",
+                        TextStyle {
+                            font: asset_holder.crt_font.clone(),
+                            font_size: 48.,
+                            color: Color::WHITE,
                         },
                     ));
                 });
+
+            // parent
+            //     .spawn((
+            //         ButtonBundle {
+            //             style: Style {
+            //                 size: Size::new(Val::Px(250.0), Val::Px(65.0)),
+            //                 margin: UiRect::all(Val::Px(20.0)),
+            //                 justify_content: JustifyContent::Center,
+            //                 align_items: AlignItems::Center,
+            //                 ..default()
+            //             },
+            //             background_color: Color::hex("#ffecd6").unwrap().into(),
+            //             ..default()
+            //         },
+            //         ResetButton,
+            //     ))
+            //     .with_children(|parent| {
+            //         parent.spawn(TextBundle::from_section(
+            //             "Play Again",
+            //             TextStyle {
+            //                 font: asset_holder.crt_font.clone(),
+            //                 font_size: 48.,
+            //                 color: Color::RED,
+            //             },
+            //         ));
+            //     });
         });
 }
