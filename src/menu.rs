@@ -10,7 +10,8 @@ pub struct MenuPlugin;
 /// The menu is only drawn during the State `GameState::Menu` and is removed when that state is exited
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(setup_menu.in_schedule(OnEnter(GameState::Menu)))
+        app.init_resource::<ButtonColors>()
+            .add_system(setup_menu.in_schedule(OnEnter(GameState::Menu)))
             .add_system(click_play_button.in_set(OnUpdate(GameState::Menu)))
             .add_system(cleanup_menu.in_schedule(OnExit(GameState::Menu)))
             .add_system(setup_controls_menu.in_schedule(OnEnter(GameState::Controls)))
@@ -28,7 +29,25 @@ struct MainMenu;
 #[derive(Component)]
 struct ControlMenu;
 
-fn setup_menu(mut commands: Commands, textures: Res<TextureAssets>) {
+#[derive(Resource)]
+pub struct ButtonColors {
+    pub(crate) normal: Color,
+}
+
+impl Default for ButtonColors {
+    fn default() -> Self {
+        ButtonColors {
+            normal: Color::rgb_u8(148, 32, 106),
+        }
+    }
+}
+
+fn setup_menu(
+    mut commands: Commands,
+    textures: Res<TextureAssets>,
+    font_assets: Res<FontAssets>,
+    button_colors: Res<ButtonColors>,
+) {
     commands.spawn(Camera2dBundle::default());
     commands
         .spawn((
@@ -37,7 +56,7 @@ fn setup_menu(mut commands: Commands, textures: Res<TextureAssets>) {
                     size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                     position_type: PositionType::Absolute,
                     justify_content: JustifyContent::Center,
-                    align_items: AlignItems::FlexEnd,
+                    // flex_direction: FlexDirection::Column,
                     ..Default::default()
                 },
                 background_color: Color::NONE.into(),
@@ -46,15 +65,71 @@ fn setup_menu(mut commands: Commands, textures: Res<TextureAssets>) {
             MainMenu,
         ))
         .with_children(|parent| {
-            parent.spawn(ImageBundle {
-                style: Style {
-                    align_self: AlignSelf::Center,
-                    size: Size::new(Val::Percent(100.), Val::Percent(100.)),
-                    ..Default::default()
-                },
-                image: textures.press_start.clone().into(),
-                ..default()
-            });
+            parent
+                .spawn(ImageBundle {
+                    style: Style {
+                        align_self: AlignSelf::Center,
+                        size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+                        ..Default::default()
+                    },
+                    image: textures.press_start.clone().into(),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent
+                        .spawn(ButtonBundle {
+                            style: Style {
+                                size: Size::new(Val::Px(600.0), Val::Px(75.0)),
+                                // margin: UiRect::all(Val::Auto),
+                                margin: UiRect {
+                                    left: Val::Auto,
+                                    right: Val::Auto,
+                                    bottom: Val::Px(100.0),
+                                    top: Val::Auto,
+                                },
+                                // position: UiRect {
+                                //     left: Val::Auto,
+                                //     right: Val::Auto,
+                                //     top: Val::Auto,
+                                //     bottom: Val::Px(10.0),
+                                // },
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                ..Default::default()
+                            },
+                            background_color: button_colors.normal.into(),
+                            ..Default::default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(TextBundle::from_section(
+                                "PRESS",
+                                TextStyle {
+                                    font: font_assets.crt_font.clone(),
+                                    font_size: 72.0,
+                                    color: Color::WHITE,
+                                    // color: Color::rgb_u8(148, 32, 106),
+                                },
+                            ));
+                            parent.spawn(TextBundle::from_section(
+                                "V",
+                                TextStyle {
+                                    font: font_assets.gamepad_font.clone(),
+                                    font_size: 72.0,
+                                    color: Color::WHITE,
+                                    // color: Color::rgb_u8(148, 32, 106),
+                                },
+                            ));
+                            parent.spawn(TextBundle::from_section(
+                                "TO PLAY",
+                                TextStyle {
+                                    font: font_assets.crt_font.clone(),
+                                    font_size: 72.0,
+                                    color: Color::WHITE,
+                                    // color: Color::rgb_u8(148, 32, 106),
+                                },
+                            ));
+                        });
+                });
         });
 }
 
@@ -63,21 +138,6 @@ fn setup_controls_menu(
     font_assets: Res<FontAssets>,
     textures: Res<TextureAssets>,
 ) {
-    let txt_style = Style {
-        size: Size::new(Val::Px(195.0), Val::Px(65.0)),
-        // center button
-        margin: UiRect {
-            left: Val::Auto,
-            right: Val::Auto,
-            top: Val::Px(10.0),
-            bottom: Val::Px(10.0),
-        },
-        // horizontally center child text
-        justify_content: JustifyContent::Center,
-        // vertically center child text
-        align_items: AlignItems::Center,
-        ..Default::default()
-    };
     commands
         .spawn((
             NodeBundle {
@@ -124,158 +184,160 @@ fn setup_controls_menu(
                             parent.spawn(TextBundle::from_section(
                                 "CONTROLS",
                                 TextStyle {
-                                    font: font_assets.pixel_font.clone(),
-                                    font_size: 48.0,
+                                    font: font_assets.crt_font.clone(),
+                                    font_size: 100.0,
                                     color: Color::WHITE,
                                 },
                             ));
                         });
 
-                    // Control wrapper
+                    // header wrapper
                     parent
                         .spawn(NodeBundle {
                             style: Style {
-                                size: Size::new(Val::Percent(65.0), Val::Auto),
-                                justify_content: JustifyContent::Center,
+                                size: Size::new(Val::Percent(100.0), Val::Auto),
+                                justify_content: JustifyContent::SpaceAround,
                                 align_items: AlignItems::Center,
-                                margin: UiRect::all(Val::Auto),
+                                margin: UiRect {
+                                    left: Val::Auto,
+                                    right: Val::Auto,
+                                    top: Val::Px(10.0),
+                                    bottom: Val::Px(10.0),
+                                },
                                 ..Default::default()
                             },
                             background_color: Color::NONE.into(),
                             ..Default::default()
                         })
                         .with_children(|parent| {
-                            // Button type wrapper
-                            parent
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        size: Size::new(Val::Percent(50.0), Val::Auto),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        margin: UiRect {
-                                            left: Val::Auto,
-                                            right: Val::Auto,
-                                            top: Val::Px(0.0),
-                                            bottom: Val::Auto,
-                                        },
-                                        flex_direction: FlexDirection::Column,
-                                        ..Default::default()
-                                    },
-                                    background_color: Color::NONE.into(),
-                                    ..Default::default()
-                                })
-                                .with_children(|parent| {
-                                    parent.spawn(TextBundle::from_section(
-                                        "Buttons:",
-                                        TextStyle {
-                                            font: font_assets.pixel_font.clone(),
-                                            font_size: 20.0,
-                                            color: Color::WHITE,
-                                        },
-                                    ));
-                                    // D-PAD button
-                                    parent.spawn(
-                                        TextBundle::from_section(
-                                            "Y",
-                                            TextStyle {
-                                                font: font_assets.gamepad_font.clone(),
-                                                font_size: 64.0,
-                                                color: Color::WHITE,
-                                            },
-                                        )
-                                        .with_style(txt_style.clone()),
-                                    );
-                                    // A button
-                                    parent.spawn(
-                                        TextBundle::from_section(
-                                            ",",
-                                            TextStyle {
-                                                font: font_assets.gamepad_font.clone(),
-                                                font_size: 64.0,
-                                                color: Color::rgb(0.25, 0.55, 0.25).into(),
-                                            },
-                                        )
-                                        .with_style(txt_style.clone()),
-                                    );
-                                    // Start button
-                                    parent.spawn(
-                                        TextBundle::from_section(
-                                            "V",
-                                            TextStyle {
-                                                font: font_assets.gamepad_font.clone(),
-                                                font_size: 64.0,
-                                                color: Color::WHITE,
-                                            },
-                                        )
-                                        .with_style(txt_style.clone()),
-                                    );
-                                });
+                            parent.spawn(TextBundle::from_section(
+                                "Travel the paths to the 5 Ammo Cans",
+                                TextStyle {
+                                    font: font_assets.crt_font.clone(),
+                                    font_size: 48.0,
+                                    color: Color::WHITE,
+                                },
+                            ));
+                        });
+                    // D-PAD
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                flex_direction: FlexDirection::Row,
+                                align_self: AlignSelf::Center,
+                                align_items: AlignItems::Center,
+                                justify_content: JustifyContent::Center,
+                                margin: UiRect {
+                                    left: Val::Auto,
+                                    right: Val::Auto,
+                                    top: Val::Px(20.0),
+                                    bottom: Val::Px(20.0),
+                                },
+                                ..default()
+                            },
+                            background_color: Color::NONE.into(),
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(TextBundle::from_section(
+                                "Y",
+                                TextStyle {
+                                    font: font_assets.gamepad_font.clone(),
+                                    font_size: 64.0,
+                                    color: Color::WHITE,
+                                },
+                            ));
+                            parent.spawn(TextBundle::from_section(
+                                "MOVE PLAYER",
+                                TextStyle {
+                                    font: font_assets.crt_font.clone(),
+                                    font_size: 48.,
+                                    color: Color::WHITE,
+                                },
+                            ));
+                        });
 
-                            //
-                            parent
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        size: Size::new(Val::Percent(50.0), Val::Auto),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        margin: UiRect {
-                                            left: Val::Auto,
-                                            right: Val::Auto,
-                                            top: Val::Px(0.0),
-                                            bottom: Val::Auto,
-                                        },
-                                        flex_direction: FlexDirection::Column,
-                                        ..Default::default()
-                                    },
-                                    background_color: Color::NONE.into(),
-                                    ..Default::default()
-                                })
-                                .with_children(|parent| {
-                                    parent.spawn(TextBundle::from_section(
-                                        "Actions:",
-                                        TextStyle {
-                                            font: font_assets.pixel_font.clone(),
-                                            font_size: 20.0,
-                                            color: Color::WHITE,
-                                        },
-                                    ));
-                                    // D-PAD button
-                                    parent.spawn(
-                                        TextBundle::from_section(
-                                            "MOVE PLAYER",
-                                            TextStyle {
-                                                font: font_assets.pixel_font.clone(),
-                                                font_size: 24.0,
-                                                color: Color::WHITE,
-                                            },
-                                        )
-                                        .with_style(txt_style.clone()),
-                                    );
-                                    // A button
-                                    parent.spawn(
-                                        TextBundle::from_section(
-                                            "SELECT YOUR ANSWER",
-                                            TextStyle {
-                                                font: font_assets.pixel_font.clone(),
-                                                font_size: 24.0,
-                                                color: Color::WHITE,
-                                            },
-                                        )
-                                        .with_style(txt_style.clone()),
-                                    );
-                                    // Start button
-                                    parent.spawn(
-                                        TextBundle::from_section(
-                                            "TO CONTINUE...",
-                                            TextStyle {
-                                                font: font_assets.pixel_font.clone(),
-                                                font_size: 24.0,
-                                                color: Color::WHITE,
-                                            },
-                                        )
-                                        .with_style(txt_style.clone()),
-                                    );
-                                });
+                    // <A> TO SELECT
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                flex_direction: FlexDirection::Row,
+                                align_self: AlignSelf::Center,
+                                align_items: AlignItems::Center,
+                                justify_content: JustifyContent::Center,
+                                margin: UiRect {
+                                    left: Val::Auto,
+                                    right: Val::Auto,
+                                    top: Val::Px(20.0),
+                                    bottom: Val::Px(20.0),
+                                },
+                                ..default()
+                            },
+                            background_color: Color::NONE.into(),
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(TextBundle::from_section(
+                                ",",
+                                TextStyle {
+                                    font: font_assets.gamepad_font.clone(),
+                                    font_size: 64.0,
+                                    color: Color::WHITE,
+                                },
+                            ));
+                            parent.spawn(TextBundle::from_section(
+                                "SELECT ANSWER",
+                                TextStyle {
+                                    font: font_assets.crt_font.clone(),
+                                    font_size: 48.,
+                                    color: Color::WHITE,
+                                },
+                            ));
+                        });
+                    // START BUTTON
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                flex_direction: FlexDirection::Row,
+                                align_self: AlignSelf::Center,
+                                align_items: AlignItems::Center,
+                                justify_content: JustifyContent::Center,
+                                margin: UiRect {
+                                    left: Val::Auto,
+                                    right: Val::Auto,
+                                    top: Val::Px(20.0),
+                                    bottom: Val::Px(20.0),
+                                },
+                                ..default()
+                            },
+                            background_color: Color::NONE.into(),
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(TextBundle::from_section(
+                                "PRESS",
+                                TextStyle {
+                                    font: font_assets.crt_font.clone(),
+                                    font_size: 48.,
+                                    color: Color::WHITE,
+                                },
+                            ));
+                            parent.spawn(TextBundle::from_section(
+                                "V",
+                                TextStyle {
+                                    font: font_assets.gamepad_font.clone(),
+                                    font_size: 64.0,
+                                    color: Color::WHITE,
+                                },
+                            ));
+                            parent.spawn(TextBundle::from_section(
+                                "TO PLAY GAME",
+                                TextStyle {
+                                    font: font_assets.crt_font.clone(),
+                                    font_size: 48.,
+                                    color: Color::WHITE,
+                                },
+                            ));
                         });
                 });
         });
@@ -289,12 +351,6 @@ fn click_play_button(
     if action_state.just_pressed(UiAction::Start) {
         state.set(GameState::Controls);
     }
-
-    // for action_state in &mut query {
-    //     if action_state.pressed(UiAction::Start) {
-    //         state.set(GameState::Controls);
-    //     }
-    // }
 }
 
 fn click_control_play_button(
@@ -309,14 +365,6 @@ fn click_control_play_button(
         level_state.set(LevelState::OverWorld);
         level_start_events.send(LevelStart);
     }
-
-    // for action_state in &mut query {
-    //     if action_state.pressed(UiAction::Start) {
-    //         state.set(GameState::Playing);
-    //         level_state.set(LevelState::OverWorld);
-    //         level_start_events.send(LevelStart);
-    //     }
-    // }
 }
 
 fn cleanup_menu(mut commands: Commands, query: Query<Entity, With<MainMenu>>) {
