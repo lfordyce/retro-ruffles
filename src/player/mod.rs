@@ -100,51 +100,10 @@ impl From<&EntityInstance> for ColliderBundle {
         let rotation_constraints = LockedAxes::ROTATION_LOCKED;
 
         match entity_instance.identifier.as_ref() {
-            "Player" => ColliderBundle {
-                collider: Collider::cuboid(8., 8.),
-                rigid_body: RigidBody::Dynamic,
-                friction: Friction {
-                    coefficient: 0.1,
-                    combine_rule: CoefficientCombineRule::Min,
-                },
-                rotation_constraints,
-                ..Default::default()
-            },
             "Goal" => ColliderBundle {
                 collider: Collider::cuboid(8., 8.),
                 rigid_body: RigidBody::Fixed,
                 active_events: ActiveEvents::COLLISION_EVENTS,
-                rotation_constraints,
-                ..Default::default()
-            },
-            // Alternate map
-            "Player_Alt" => ColliderBundle {
-                collider: Collider::ball(8.),
-                rigid_body: RigidBody::Dynamic,
-                friction: Friction {
-                    coefficient: 0.1,
-                    combine_rule: CoefficientCombineRule::Min,
-                },
-                rotation_constraints,
-                ..Default::default()
-            },
-            "Crab" => ColliderBundle {
-                collider: Collider::ball(8.),
-                rigid_body: RigidBody::Dynamic,
-                friction: Friction {
-                    coefficient: 0.1,
-                    combine_rule: CoefficientCombineRule::Min,
-                },
-                rotation_constraints,
-                ..Default::default()
-            },
-            "Flamingo" => ColliderBundle {
-                collider: Collider::ball(8.),
-                rigid_body: RigidBody::Dynamic,
-                friction: Friction {
-                    coefficient: 0.1,
-                    combine_rule: CoefficientCombineRule::Min,
-                },
                 rotation_constraints,
                 ..Default::default()
             },
