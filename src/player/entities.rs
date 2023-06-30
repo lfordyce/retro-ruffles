@@ -184,7 +184,7 @@ fn player_alt_goal_collision(
                         commands.entity(*b).despawn_recursive();
                     }
 
-                    if questions.iter().all(|(_idx, &ref q)| q.used) {
+                    if questions.iter().all(|(_idx, q)| q.used) {
                         game_state.set(GameState::GameOver);
                     } else {
                         level_state.set(LevelState::Console);

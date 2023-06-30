@@ -35,11 +35,11 @@ pub enum Vitality {
 impl From<PlayerAnimationState> for SpriteSheetAnimation {
     fn from(animation_state: PlayerAnimationState) -> Self {
         let indices = match animation_state {
-            PlayerAnimationState::Idle => 15..23,
+            PlayerAnimationState::Idle => 248..252,
             PlayerAnimationState::Moving(direction) => match direction {
-                MovementDirection::Up => 60..66,
-                MovementDirection::Down => 30..36,
-                MovementDirection::Left => 45..51,
+                MovementDirection::Up => 280..284,
+                MovementDirection::Down => 264..268,
+                MovementDirection::Left => 248..252,
             },
         };
 
@@ -111,15 +111,45 @@ impl From<&EntityInstance> for ColliderBundle {
                 ..Default::default()
             },
             "Goal" => ColliderBundle {
-                collider: Collider::cuboid(4., 4.),
+                collider: Collider::cuboid(8., 8.),
                 rigid_body: RigidBody::Fixed,
                 active_events: ActiveEvents::COLLISION_EVENTS,
                 rotation_constraints,
                 ..Default::default()
             },
             // Alternate map
+            "Player_Alt" => ColliderBundle {
+                collider: Collider::ball(8.),
+                rigid_body: RigidBody::Dynamic,
+                friction: Friction {
+                    coefficient: 0.1,
+                    combine_rule: CoefficientCombineRule::Min,
+                },
+                rotation_constraints,
+                ..Default::default()
+            },
             "Crab" => ColliderBundle {
                 collider: Collider::ball(8.),
+                rigid_body: RigidBody::Dynamic,
+                friction: Friction {
+                    coefficient: 0.1,
+                    combine_rule: CoefficientCombineRule::Min,
+                },
+                rotation_constraints,
+                ..Default::default()
+            },
+            "Flamingo" => ColliderBundle {
+                collider: Collider::ball(8.),
+                rigid_body: RigidBody::Dynamic,
+                friction: Friction {
+                    coefficient: 0.1,
+                    combine_rule: CoefficientCombineRule::Min,
+                },
+                rotation_constraints,
+                ..Default::default()
+            },
+            "Flamingooo" => ColliderBundle {
+                collider: Collider::ball(16.),
                 rigid_body: RigidBody::Dynamic,
                 friction: Friction {
                     coefficient: 0.1,
@@ -140,7 +170,7 @@ impl From<&EntityInstance> for ColliderBundle {
                 ..Default::default()
             },
             "Goal_Alt" => ColliderBundle {
-                collider: Collider::cuboid(8., 8.),
+                collider: Collider::cuboid(64., 64.),
                 rigid_body: RigidBody::Fixed,
                 active_events: ActiveEvents::COLLISION_EVENTS,
                 rotation_constraints,

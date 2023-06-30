@@ -1,4 +1,3 @@
-use crate::animation::{FromComponentPlugin, SpriteSheetAnimation};
 use crate::player::{ColliderBundle, PlayerAction, Vitality};
 use crate::GameState;
 use bevy::prelude::*;
@@ -11,15 +10,15 @@ pub struct PlayerAltPlugin;
 #[derive(Component, Default, Clone)]
 pub struct PlayerAlt;
 
-impl From<PlayerAlt> for SpriteSheetAnimation {
-    fn from(_: PlayerAlt) -> Self {
-        SpriteSheetAnimation {
-            indices: 0..4,
-            frame_timer: Timer::from_seconds(0.2, TimerMode::Repeating),
-            repeat: true,
-        }
-    }
-}
+// impl From<PlayerAlt> for SpriteSheetAnimation {
+//     fn from(_: PlayerAlt) -> Self {
+//         SpriteSheetAnimation {
+//             indices: 0..4,
+//             frame_timer: Timer::from_seconds(0.2, TimerMode::Repeating),
+//             repeat: true,
+//         }
+//     }
+// }
 
 // impl From<PlayerAlt> for SpriteSheetAnimation {
 //     fn from(_: PlayerAlt) -> Self {
@@ -85,6 +84,7 @@ pub struct PlayerAltBundle {
     pub collider_bundle: ColliderBundle,
 
     player: PlayerAlt,
+    // animation: PlayerAnimationState,
     vitality: Vitality,
 
     #[bundle]
@@ -96,11 +96,63 @@ pub struct PlayerAltBundle {
 impl Plugin for PlayerAltPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(InputManagerPlugin::<PlayerAction>::default())
-            .register_ldtk_entity::<PlayerAltBundle>("Crab")
-            .add_plugin(FromComponentPlugin::<PlayerAlt, SpriteSheetAnimation>::new())
+            .register_ldtk_entity::<PlayerAltBundle>("Flamingooo")
+            // .add_plugin(FromComponentPlugin::<
+            //     PlayerAnimationState,
+            //     SpriteSheetAnimation,
+            // >::new())
             .add_system(apply_alt_actions.in_set(OnUpdate(GameState::Playing)));
     }
 }
+//
+// fn apply_alt_actions(
+//     mut player_query: Query<
+//         (
+//             &ActionState<PlayerAction>,
+//             &mut PlayerAnimationState,
+//             &mut Velocity,
+//             &mut TextureAtlasSprite,
+//         ),
+//         With<PlayerAlt>,
+//     >,
+// ) {
+//     let speed = 100.;
+//
+//     for (action_state, mut animation_state, mut velocity, mut sprite) in &mut player_query {
+//         let mut direction = Vec2::default();
+//         if action_state.pressed(PlayerAction::Up) {
+//             direction.y = 1.;
+//         } else if action_state.pressed(PlayerAction::Down) {
+//             direction.y = -1.;
+//         }
+//
+//         if action_state.pressed(PlayerAction::Right) {
+//             direction.x = 1.;
+//         } else if action_state.pressed(PlayerAction::Left) {
+//             direction.x = -1.;
+//         }
+//
+//         let move_delta = direction.normalize_or_zero() * speed;
+//         velocity.linvel = move_delta;
+//
+//         if velocity.linvel.x.abs() > 0. {
+//             sprite.flip_x = velocity.linvel.x < 0.;
+//             if *animation_state != PlayerAnimationState::Moving(MovementDirection::Left) {
+//                 *animation_state = PlayerAnimationState::Moving(MovementDirection::Left)
+//             }
+//         }
+//         if velocity.linvel.y > 0.
+//             && *animation_state != PlayerAnimationState::Moving(MovementDirection::Up)
+//         {
+//             *animation_state = PlayerAnimationState::Moving(MovementDirection::Up)
+//         }
+//         if velocity.linvel.y < 0.
+//             && *animation_state != PlayerAnimationState::Moving(MovementDirection::Down)
+//         {
+//             *animation_state = PlayerAnimationState::Moving(MovementDirection::Down)
+//         }
+//     }
+// }
 
 fn apply_alt_actions(
     mut player_query: Query<
@@ -132,7 +184,7 @@ fn apply_alt_actions(
         velocity.linvel = move_delta;
 
         if velocity.linvel.x.abs() > 0. {
-            sprite.flip_x = velocity.linvel.x < 0.;
+            sprite.flip_x = velocity.linvel.x > 0.;
         }
     }
 }
