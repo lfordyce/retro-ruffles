@@ -1,5 +1,6 @@
 mod actions;
 mod animation;
+mod audio;
 mod clock;
 mod console;
 mod despawn;
@@ -11,6 +12,7 @@ mod player;
 mod ui;
 
 use crate::actions::ActionsPlugin;
+use crate::audio::InternalAudioPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 
@@ -58,6 +60,7 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_state::<GameState>()
             .add_state::<LevelState>()
+            .add_plugin(InternalAudioPlugin)
             .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
             .insert_resource(RapierConfiguration {
                 gravity: Vec2::ZERO,
